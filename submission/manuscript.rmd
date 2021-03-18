@@ -114,10 +114,10 @@ absolute and relative treatment effects are estimated within risk strata; 5)
 presentation and evaluation of the results. A simple overview of the procedure
 can be seen in Figure XXXX.
 
-## Step 1: General definition of the problem The typical research aim is: "to
-compare the effect of treatment $T$ to a comparator treatment $C$ in patients
-with disease $D$ with respect to outcomes $O_1,\dots,O_n$". At least three
-cohorts are defined:
+## Step 1: General definition of the problem 
+The typical research aim is: "to compare the effect of treatment $T$ to a
+comparator treatment $C$ in patients with disease $D$ with respect to outcomes
+$O_1,\dots,O_n$". At least three cohorts are defined:
 
 * A single treatment cohort ($T$) which includes patients with disease $D$
 receiving the target treatment of interest. For example, a set of hypertension
@@ -132,16 +132,18 @@ developing the outcomes of interest. For example, the
 set of patients in a database that have at least one occurrence of acute
 myocardial infarction in their record.
 
-## Step 2: Identification of the database The aim of this step is the inclusion
-of databases that represent the patient population of interest. The inclusion of
-multiple databases potentially increases the generalizability of results.
-Furthermore, the cohorts should preferably have adequate sample size to ensure
-precise effect estimation, even within smaller risk strata.
+## Step 2: Identification of the database 
+The aim of this step is the inclusion of databases that represent the patient
+population of interest. The inclusion of multiple databases potentially
+increases the generalizability of results.  Furthermore, the cohorts should
+preferably have adequate sample size to ensure precise effect estimation, even
+within smaller risk strata.
 
-## Step 3: Prediction We adopt the standardized framework for the generation of
-patient-level prediction models using observational data that ensures adherence
-to existing guidelines. This prediction framework requires the definition of two
-essential cohorts: a target cohort and an outcome cohort. 
+## Step 3: Prediction 
+We adopt the standardized framework for the generation of patient-level
+prediction models using observational data that ensures adherence to existing
+guidelines. This prediction framework requires the definition of two essential
+cohorts: a target cohort and an outcome cohort. 
 
 To generate the target cohort we pool the already defined treatment cohort  and
 comparator cohort . However, for risk-based analysis of treatment effects it is
@@ -159,33 +161,35 @@ regression, random forest, gradient boosting machines, decision tree, naive
 Bayes, K-nearest neighbors, neural network and deep learning (convolutional
 neural networks, recurrent neural network and deep nets).
 
-## Step 4: Estimation We use the patient-level prediction model to divide the
-target population into a set of equally-sized risk strata, typically 4 risk
-quarters. Then, we estimate propensity scores within risk strata. These
-propensity scores are used when estimating treatment effects, either by matching
-of patients from different treatment cohorts, by stratification of patients into
-groups with similar propensity scores, or by weighing patients’ contribution to
-the estimation process. Within risk strata we estimate treatment effect both on
-the relative and the absolute scale. It is important to evaluate treatment
-effects in both scales, as effect cannot remain constant on both the relative
-and the absolute scale at the same time, assuming a non-zero treatment
+## Step 4: Estimation 
+We use the patient-level prediction model to divide the target population into
+a set of equally-sized risk strata, typically 4 risk quarters. Then, we
+estimate propensity scores within risk strata. These propensity scores are used
+when estimating treatment effects, either by matching of patients from
+different treatment cohorts, by stratification of patients into groups with
+similar propensity scores, or by weighing patients’ contribution to the
+estimation process. Within risk strata we estimate treatment effect both on the
+relative and the absolute scale. It is important to evaluate treatment effects
+in both scales, as effect cannot remain constant on both the relative and the
+absolute scale at the same time, assuming a non-zero treatment
 effect—treatment. Any appropriate method for the evaluation of relative and
 absolute treatment effects can be considered, as long as the this is done
 consistently in all risk strata.
 
-## Step 5: Result presentation and evaluation Our framework provides
-standardized output for each step of the analysis. The number of patients and
-person years by treatment arm along with the number of outcomes. A performance
-overview of the derived prediction models, including discrimination and
-calibration both in the propensity score matched subset, the entire population
-and separately for treated and comparator patients. This is rather relevant as
-the performance of the prediction models is directly related to our ability to
-single out patient subgroups where treatment may be highly beneficial or unsafe.
-Kent et al  demonstrated that the event rate and the discriminative ability of
-the prediction model can predict very well the distribution of predicted risk.
-The lower the event rate and the higher the c-statistic (given good calibration)
-result in high risk heterogeneity, thus making estimated average treatment
-effects uninformative. In this case, risk stratified analysis of HTE can be more
+## Step 5: Result presentation and evaluation 
+Our framework provides standardized output for each step of the analysis. The
+number of patients and person years by treatment arm along with the number of
+outcomes. A performance overview of the derived prediction models, including
+discrimination and calibration both in the propensity score matched subset, the
+entire population and separately for treated and comparator patients. This is
+rather relevant as the performance of the prediction models is directly related
+to our ability to single out patient subgroups where treatment may be highly
+beneficial or unsafe.  Kent et al  demonstrated that the event rate and the
+discriminative ability of the prediction model can predict very well the
+distribution of predicted risk.  The lower the event rate and the higher the
+c-statistic (given good calibration) result in high risk heterogeneity, thus
+making estimated average treatment effects uninformative. In this case, risk
+stratified analysis of HTE can be more
 effective in singling out patient subgroups that stand to benefit (or be harmed)
 most by treatment in question. 
 
@@ -210,10 +214,11 @@ similar to other major treatment classes in younger hypertensive patients and,
 thus, countries like Canada still include them as a first-line candidate for the
 treatment.
 
-## Step 1: General definition of the problem We demonstrate the framework with
-the following research aim: "to compare the effect of ACE-inhibitors ($T$) to
-the effect of beta blockers ($C$) in patients with established hypertension
-($D$) with respect to 9 outcomes ($O_1,\dots,O_9$)". The cohorts are:
+## Step 1: General definition of the problem 
+We demonstrate the framework with the following research aim: "to compare the
+effect of ACE-inhibitors ($T$) to the effect of beta blockers ($C$) in patients
+with established hypertension ($D$) with respect to 9 outcomes
+($O_1,\dots,O_9$)". The cohorts are:
 
 * Treatment cohort: Patients receiving any drug within the ACE-inhibitor class
 with at least one year of follow-up before treatment start and a recorded
@@ -230,7 +235,8 @@ angioedema; cough; abnormal weight gain (safety outcomes).
 
 All cohort definitions can be found in the supplementary material.
 
-## Step 2: Identification of the databases We used the following databases:
+## Step 2: Identification of the databases 
+We used the following databases:
 
 * IBM MarketScan Medicare Supplemental Beneficiaries (MDCR): Represents health
 services of retirees (aged 65 or older) in the United States with primary or
@@ -250,7 +256,8 @@ provide private healthcare coverage to employees, their spouses and
 dependents. Additionally, it captures laboratory tests for a subset of the
 covered lives.
 
-## Step 3: Prediction To obtain a target cohort for developing patient-level
+## Step 3: Prediction 
+To obtain a target cohort for developing patient-level
 predictions we first merged the ACE-inhibitors cohort with the beta blockers
 cohort. We then matched patients in the ACE-inhibitor cohort to patients in the
 beta blockers cohort on the propensity score. We focused on the efficacy
@@ -261,17 +268,18 @@ time horizon of 2 years after inclusion into the target cohort. We developed the
 prediction models using LASSO logistic regression with 3-fold cross validation
 for hyper-parameter selection.
 
-## Step 4: Estimation We used patient-level predictions to stratify the patient
-population into 4 risk quarters. We estimated relative and absolute treatment
-effects for all 9 outcomes of interest. In order to estimate risk
-quarter-specific treatment effects we first estimated propensity scores within
-risk quarters. We then used the propensity scores to stratify patients into 5
-strata. 
+## Step 4: Estimation 
+We used patient-level predictions to stratify the patient population into 4
+risk quarters. We estimated relative and absolute treatment effects for all 9
+outcomes of interest. In order to estimate risk quarter-specific treatment
+effects we first estimated propensity scores within risk quarters. We then used
+the propensity scores to stratify patients into 5 strata. 
 
-## Step 5: Result presentation and evaluation In the main manuscript we present
-the results of the analysis in the CCAE database with stratification based on
-risk predictions of acute MI. Results of analyses in the other databases and
-with other risk stratifications are included in the supplementary material.
+## Step 5: Result presentation and evaluation 
+In the main manuscript we present the results of the analysis in the CCAE
+database with stratification based on risk predictions of acute MI. Results of
+analyses in the other databases and with other risk stratifications are
+included in the supplementary material.
 
 For each outcome and in each risk stratum there were adequate numbers of
 patients (Table XXXX). The discriminative ability of the prediction models was
