@@ -14,6 +14,7 @@ header-includes:
   - \usepackage[left, pagewise]{lineno}
 editor_options: 
   chunk_output_type: console
+bibliography: references.bib
 csl: jamia.csl
 ---
 
@@ -58,50 +59,55 @@ concept described as heterogeneity of treatment effects (HTE)—has been growing
 This concept is central to the agenda for both personalized (or precision)
 medicine and comparative effectiveness research. More formally, HTE has been
 defined as non-random variability in the direction or magnitude of a treatment
-effect, in which the effect is measured using clinical outcomes. Usually,
-analyses focus on the relative scale, where treatment effects are assessed one
-at a time in patient subgroups defined from single covariates, an approach that
-suffers from low power and multiplicity issues. However, even with
-well-established constant relative effects, treatment benefit (or harm) may vary
-substantially on the absolute scale.
+effect, in which the effect is measured using clinical outcomes
+[@KRAVITZ2004]. Usually, analyses focus on the relative scale, where treatment
+effects are assessed one at a time in patient subgroups defined from single
+covariates, an approach that suffers from low power and multiplicity issues
+[@Varadhan2013]. However, even with well-established constant relative
+effects, treatment benefit (or harm) may vary substantially on the absolute
+scale.
 
 More recently, “predictive” HTE analyses have been described (and contrasted
 with “one-variable-at-a-time” subgroup analysis) as approaches that provide
 predictions of potential outcomes in a particular patient with one intervention
 versus an alternative, taking into account multiple relevant patient
 characteristics. One promising approach is “risk modeling”, in which treatment
-effects are estimated  in strata of predicted risk. Such a risk-based approach
-first stratifies patients according to baseline risk predictions, using either
-an existing or an internally developed risk prediction model. Then, relative and
-absolute treatment effects are estimated within risk strata.
+effects are estimated in strata of predicted risk [@Kent2010; @Kent2018]. Such
+a risk-based approach first stratifies patients according to baseline risk
+predictions, using either an existing or an internally developed risk prediction
+model [@Kent2010]. Then, relative and absolute treatment effects are estimated
+within risk strata.
   
 While these approaches have generally been recommended for application to
 clinical trials, observational databases are also an appealing substrate.
 Observational healthcare databases, such as administrative claims and electronic
 health records, are already highly available for the analysis of
-pharmacoepidemiologic research questions. They are also often larger than many
-typical trials, providing excellent power for HTE analysis, and include
-heterogeneous populations. However, unlike trials, treatment effects are subject
-to confounding and the unique structure of different databases calls for
-database-specific analysis plans that are often not easily transportable.
+pharmacoepidemiologic research questions [@AdlerMilstein2017; @Dahabreh2014].
+They are also often larger than many typical trials, providing excellent power
+for HTE analysis, and include heterogeneous populations. However, unlike trials,
+treatment effects are subject to confounding and the unique structure of
+different databases calls for database-specific analysis plans that are often
+not easily transportable.
 
-The Observational Health Data Sciences and Informatics (OHDSI) collaborative has
-established an international network of data partners and researchers that aim
-to bring out the value of health data through large-scale analytics by mapping
-all available databases to the Observational Medical Outcomes Partnership (OMOP)
-Common Data Model (CDM). The common data structure enables analyses at a very
-large scale. For example, in a recent study, a large set of first-line
-treatments for hypertension was compared with respect to 55 outcomes in a
-network of databases, including 4.9 million patients from around the world.
+The Observational Health Data Sciences and Informatics (OHDSI) collaborative
+(!!REF) has established an international network of data partners and
+researchers that aim to bring out the value of health data through large-scale
+analytics by mapping all available databases to the Observational Medical
+Outcomes Partnership (OMOP) Common Data Model (CDM) [@Overhage2012]. The
+common data structure enables analyses at a very large scale. For example, in a
+recent study [@Suchard2019], a large set of first-line treatments for
+hypertension was compared with respect to 55 outcomes in a network of databases,
+including 4.9 million patients from around the world.
 
 We aimed to develop a framework for risk-based assessment of treatment effect
 heterogeneity in high-dimensional observational data. We implemented the
 framework using existing OHDSI methods for use in the OMOP-CDM, including the
-patient-level prediction framework and the population-level effect estimation
-framework based on new-user cohort design. As a proof-of-concept we analyzed
-heterogeneity of the effects of first-line hypertension treatment: we compared
-the effect of angiotensin converting enzyme (ACE) inhibitors to beta blockers on
-9 outcomes across three different US claims databases.
+patient-level prediction framework [@Reps2018] and the population-level effect
+estimation framework [@Ryan2013] based on new-user cohort design. As a
+proof-of-concept we analyzed heterogeneity of the effects of first-line
+hypertension treatment: we compared the effect of angiotensin converting enzyme
+(ACE) inhibitors to beta blockers on 9 outcomes across three different US claims
+databases.
 
 # Methods
 The proposed framework defines 5 distinct steps that enable a standardized
@@ -135,31 +141,32 @@ myocardial infarction in their record.
 ## Step 2: Identification of the database 
 The aim of this step is the inclusion of databases that represent the patient
 population of interest. The inclusion of multiple databases potentially
-increases the generalizability of results.  Furthermore, the cohorts should
+increases the generalizability of results. Furthermore, the cohorts should
 preferably have adequate sample size to ensure precise effect estimation, even
 within smaller risk strata.
 
 ## Step 3: Prediction 
 We adopt the standardized framework for the generation of patient-level
 prediction models using observational data that ensures adherence to existing
-guidelines. This prediction framework requires the definition of two essential
-cohorts: a target cohort and an outcome cohort. 
+guidelines [@Collins2015; @Moons2015]. This prediction framework requires the
+definition of two essential cohorts: a target cohort and an outcome cohort. 
 
-To generate the target cohort we pool the already defined treatment cohort  and
+To generate the target cohort we pool the already defined treatment cohort and
 comparator cohort . However, for risk-based analysis of treatment effects it is
 necessary to avoid deferentially fitting the prediction model to patients across
-the treatment arm in order to avoid inducing spurious interactions. To do this,
-we developed the patient-level prediction model in the propensity score-matched
-subset of the population (1:1), where treatment assignment is well-balanced. The
-propensity scores are based on LASSO logistic regression for modeling the
-association between treatment assignment and all available demographics, drug
-exposures, diagnoses, measurements and medical procedures. Finally, we need to
-define the time horizon for which we aim to make predictions and we need to
-select the machine-learning algorithm we want to use to generate patient-level
-predictions. Currently, the available options are regularized logistic
-regression, random forest, gradient boosting machines, decision tree, naive
-Bayes, K-nearest neighbors, neural network and deep learning (convolutional
-neural networks, recurrent neural network and deep nets).
+the treatment arm in order to avoid inducing spurious interactions [@Burke2014;
+@vanKlaveren2019]. To do this, we developed the patient-level prediction model
+in the propensity score-matched subset of the population (1:1), where treatment
+assignment is well-balanced. The propensity scores are based on LASSO logistic
+regression for modeling the association between treatment assignment and all
+available demographics, drug exposures, diagnoses, measurements and medical
+procedures. Finally, we need to define the time horizon for which we aim to make
+predictions and we need to select the machine-learning algorithm we want to use
+to generate patient-level predictions. Currently, the available options are
+regularized logistic regression, random forest, gradient boosting machines,
+decision tree, naive Bayes, K-nearest neighbors, neural network and deep
+learning (convolutional neural networks, recurrent neural network and deep
+nets).
 
 ## Step 4: Estimation 
 We use the patient-level prediction model to divide the target population into
@@ -184,9 +191,9 @@ discrimination and calibration both in the propensity score matched subset, the
 entire population and separately for treated and comparator patients. This is
 rather relevant as the performance of the prediction models is directly related
 to our ability to single out patient subgroups where treatment may be highly
-beneficial or unsafe.  Kent et al  demonstrated that the event rate and the
+beneficial or unsafe.  Kent et al [@Kent2016] demonstrated that the event rate and the
 discriminative ability of the prediction model can predict very well the
-distribution of predicted risk.  The lower the event rate and the higher the
+distribution of predicted risk. The lower the event rate and the higher the
 c-statistic (given good calibration) result in high risk heterogeneity, thus
 making estimated average treatment effects uninformative. In this case, risk
 stratified analysis of HTE can be more
@@ -206,13 +213,14 @@ enzyme (ACE) inhibitors to beta blockers. ACE inhibitors are among the most
 common treatment classes for hypertension, with a well-established
 effectiveness. Beta blockers, even though initially widely used for the
 treatment of hypertension, more recent trials and meta-analyses have cast doubt
-on their relative effectiveness. As a result, newer US guidelines do not
-consider them for initial treatment for hypertension while in the EU guidelines
-combination with other antihypertensive treatments is recommended. However,
-another meta-analysis suggested that the efficacy profile of beta blockers is
-similar to other major treatment classes in younger hypertensive patients and,
-thus, countries like Canada still include them as a first-line candidate for the
-treatment.
+on their relative effectiveness (!!REF). As a result, newer US guidelines do
+not consider them for initial treatment for hypertension while in the EU
+guidelines combination with other antihypertensive treatments is recommended
+[@Whelton2018; @Williams2018]. However, another meta-analysis suggested that
+the efficacy profile of beta blockers is similar to other major treatment
+classes in younger hypertensive patients and, thus, countries like Canada still
+include them as a first-line candidate for the treatment [@Khan2006;
+@Rabi2020].
 
 ## Step 1: General definition of the problem 
 We demonstrate the framework with the following research aim: "to compare the
@@ -310,48 +318,50 @@ focused on the higher risk patients, in whom the benefits outweigh the harms.
 However, treatment with beta blockers may be a viable option in lower risk
 patients, in whom the benefit-harm tradeoff is in favor of beta blockers. This
 is in accordance with earlier findings that beta blockers should be considered
-as first-line treatment for younger hypertensive patients. More thorough
+as first-line treatment for younger hypertensive patients [@Cruickshank2007; @Khan2006]. More thorough
 evaluation of these results is required in future research.
 
-The results of the analyses performed can be accessed and assessed through a
+  The results of the analyses performed can be accessed and assessed through a
 publicly available web application (https://data.ohdsi.org/AceBeta9Outcomes).
 
 # Discussion
 We developed a framework for the assessment of heterogeneity of treatment effect
 in large observational databases using a risk modeling approach. The framework
 is implemented in an open source R-package in the OHDSI methods library
-(https://github.com/OHDSI/RiskStratifiedEstimation). As a proof-of-concept, we
+(<https://github.com/OHDSI/RiskStratifiedEstimation>). As a proof-of-concept, we
 used our framework to evaluate heterogeneity of the effect of treatment with
 ACE-inhibitors compared to beta blockers on 3 efficacy and 6 safety outcomes.
 
 In recent years several methods for the evaluation of treatment effect
-heterogeneity have been developed in the setting of RCTs. However, low power and
-restricted prior knowledge on the mechanisms of variation in treatment effect
-are often inherent in RCTs, which are often adequately powered only for the
-analysis of the primary outcome. Observational databases contain a large amount
-of information on treatment assignment and outcomes of interest, while also
-capturing key patient characteristics. Our framework provides a standardized
-approach that can be used to leverage available information from these data
-sources, allowing for large-scale assessment of treatment effect heterogeneity.
-Multiple outcomes can be evaluated in patient subgroups of similar baseline
-outcome risk, where different outcome risk stratification schemes can be
-considered. The standardized nature of the framework enables transportability to
-multiple databases, provided that they are mapped to the OMOP-CDM.
+heterogeneity have been developed in the setting of RCTs [@Rekkas2020].
+However, low power and restricted prior knowledge on the mechanisms of variation
+in treatment effect are often inherent in RCTs, which are often adequately
+powered only for the analysis of the primary outcome. Observational databases
+contain a large amount of information on treatment assignment and outcomes of
+interest, while also capturing key patient characteristics. Our framework
+provides a standardized approach that can be used to leverage available
+information from these data sources, allowing for large-scale assessment of
+treatment effect heterogeneity. Multiple outcomes can be evaluated in patient
+subgroups of similar baseline outcome risk, where different outcome risk
+stratification schemes can be considered. The standardized nature of the
+framework enables transportability to multiple databases, provided that they are
+mapped to the OMOP-CDM.
 
 Recently, guidelines on the application of risk modeling approaches for the
 assessment of heterogeneity of treatment effect in RCT settings have been
-proposed. Our framework aims to translate these guidelines to the observational
-setting while also providing a toolset for its implementation. Several
-considerations need to be made. First, estimates may be biased due to the
-observational nature of the data. We attempt to account for potential
-confounding by estimating propensity scores within strata of predicted risk.
-These scores are estimated using regularized logistic regression on a large set
-of pre-defined covariates. This specific approach gave accurate results in
-extensive simulation studies. However, such approaches do not account for
-unobserved confounding. Several sensitivity analyses have been proposed in the
-literature for measuring the robustness of results in the presence of unobserved
-confounding. Another approach is to calibrate estimates and confidence intervals
-based on a large set of negative controls. Negative controls are
+proposed [@Kent2019; @PathEnE]. Our framework aims to translate these
+guidelines to the observational setting while also providing a toolset for its
+implementation. Several considerations need to be made. First, estimates may be
+biased due to the observational nature of the data. We attempt to account for
+potential confounding by estimating propensity scores within strata of predicted
+risk. These scores are estimated using regularized logistic regression on a
+large set of pre-defined covariates. This specific approach gave accurate
+results in extensive simulation studies [@Tian2018]. However, such approaches
+do not account for unobserved confounding [@Liu2013]. Several sensitivity
+analyses have been proposed in the literature for measuring the robustness of
+results in the presence of unobserved confounding. Another approach is to
+calibrate estimates and confidence intervals based on a large set of negative
+controls [@Schuemie2014; @Schuemie2571]. Negative controls are
 treatment-outcome pairs for which a null effect has been established. Estimating
 these effects within available data provides an approximation of the null
 distribution that can be used to empirically recalibrate effect estimates.
@@ -360,23 +370,24 @@ Future work may extend our framework with this type of analyses.
 Our method provides a risk-stratified assessment of treatment effect
 heterogeneity. However, even though stratification can provide a rough guide for
 clinical interpretation, it is not appropriate to guide clinical practice, where
-decisions need to be made at the individual level. Presentation of treatment
-effects as a continuous function of risk would be more helpful, but is
+decisions need to be made at the individual level [@Kent2019]. Presentation of
+treatment effects as a continuous function of risk would be more helpful, but is
 methodologically challenging. Future research is necessary for the development
-of methods for continuous risk-based assessment of HTE. 
+of methods for continuous risk-based assessment of HTE.
 
 Externally derived prediction models are preferred for analyzing treatment
-effect heterogeneity. Such external models should be well transportable. In the
-absence of such prediction models, simulations of RCTs have shown that
-internally derived models can be used to provide unbiased estimates of treatment
-effect across the spectrum of baseline risk. However, in observational databases
-treatment arms may significantly differ in sample size. Because the prediction
-model will possibly better fit to the larger treatment arm, this may introduce
-spurious treatment-covariate interactions in the prediction model, leading to
-sub-optimal risk stratification. As a remedy, we first match the patients in the
-treatment and the comparator cohorts on the basis of propensity scores.
-Additionally, we propose to assess model performance in the separate treatment
-arms to evaluate its aptness for risk stratification.
+effect heterogeneity [@Kent2010]. Such external models should be well
+transportable. In the absence of such prediction models, simulations of RCTs
+have shown that internally derived models can be used to provide unbiased
+estimates of treatment effect across the spectrum of baseline risk
+[@Burke2014]. However, in observational databases treatment arms may
+significantly differ in sample size. Because the prediction model will possibly
+better fit to the larger treatment arm, this may introduce spurious
+treatment-covariate interactions in the prediction model, leading to sub-optimal
+risk stratification. As a remedy, we first match the patients in the treatment
+and the comparator cohorts on the basis of propensity scores. Additionally, we
+propose to assess model performance in the separate treatment arms to evaluate
+its aptness for risk stratification.
 
 Our contribution is a translation of the PATH statement principles to the OHDSI
 methods library. Our methods encourage open science as it requires clear
@@ -392,14 +403,14 @@ populations. We propose that the framework is implemented any time treatment
 effect estimation in high-dimensional observational data is undertaken.
 
 Recently, disease risk scores have been explored as an alternative to propensity
-scores for balancing covariates. In our method, the objective of risk
-stratification is not balancing, but assessing the variation of treatment
-effects on multiple outcomes across patients with different levels of baseline
-risk. Although using the same risk model for balancing and risk-based HTE
-analysis may sound attractive, we note that our method only uses one risk model
-for stratification and one propensity score model for balancing, while separate
-disease risk score models would be required to analyze treatment effects for
-each of the multiple outcomes.   
+scores for balancing covariates [@Glynn2012; @Hansen2008]. In our method, the
+objective of risk stratification is not balancing, but assessing the variation
+of treatment effects on multiple outcomes across patients with different levels
+of baseline risk. Although using the same risk model for balancing and
+risk-based HTE analysis may sound attractive, we note that our method only uses
+one risk model for stratification and one propensity score model for balancing,
+while separate disease risk score models would be required to analyze treatment
+effects for each of the multiple outcomes.
 
 In conclusion, the proof-of-concept study demonstrates the feasibility of our
 framework for risk-based assessment of treatment effect heterogeneity in large
@@ -409,3 +420,13 @@ observational data is of interest. Our framework is a supplement to the
 population-level effect estimation framework developed within OHDSI and, in the
 presence of an adequately discriminating prediction model, can be used to make
 the overall results more actionable for medical decision making.
+
+\newpage
+# References
+\setlength{\parindent}{-0.25in}
+\setlength{\leftskip}{0.25in}
+\noindent
+<div id="refs"></div>
+\setlength{\parindent}{0in}
+\setlength{\leftskip}{0in}
+\noindent
