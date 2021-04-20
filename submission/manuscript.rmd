@@ -1,5 +1,12 @@
 ---
 title: "A standardized framework for risk-based assessment of treatment effect heterogeneity in observational healthcare databases"
+author: 
+  - Alexandros Rekkas, MSc${^1}$ 
+  - David van Klaveren, PhD$^{2,3}$, 
+  - Patrick B. Ryan, PhD$^4$
+  - Ewout W. Steyerberg, PhD$^{3,5}$
+  - David M. Kent, PhD$^2$
+  - Peter R. Rijnbeek, PhD${^1}$
 output:
     bookdown::pdf_document2: default
     bookdown::word_document2:
@@ -12,12 +19,58 @@ header-includes:
   - \usepackage{setspace}
   - \doublespacing
   - \usepackage[left, pagewise]{lineno}
+  - \usepackage{caption}
 editor_options: 
   chunk_output_type: console
 bibliography: references.bib
 csl: jamia.csl
 ---
 
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(here)
+library(kableExtra)
+d <- function(x, decimals = 2) {
+  sprintf(paste0("%1.", decimals, "f"), x) 
+}
+knit_hooks$set(
+  inline = function(x) {
+    prettyNum(
+      x,
+      big.mark = ",",
+      decimal.mark = ".",
+      preserve.width = "individual"
+    )
+  }
+)
+```
+\vspace{20mm}
+
+$^1$ Department of Medical Informatics, Erasmus University Medical Center,
+Rotterdam, Netherlands
+
+$^2$ Predictive Analytics and Comparative Effectiveness (PACE) Center, Institute
+for Clinical Research and Health Policy Studies (ICRHPS), Tufts Medical Center,
+Boston, MA, USA
+
+$^3$ Department of Public Health, Erasmus University Medical Center, Rotterdam,
+Netherlands
+
+$^4$ Janssen Research and Development, 125 Trenton Harbourton Rd,
+Titusville,NJ 08560, USA
+
+$^5$ Department of Biomedical Data Sciences, Leiden University Medical Center,
+Leiden, The Netherlands
+
+\vspace{30mm}
+**Funding**: This work has been performed in the European Health Data and
+Evidence Network (EHDEN) project. This project has received funding from the
+Innovative Medicines Initiative 2 Joint Undertaking (JU) under grant agreement
+No 806968. The JU receives support from the European Union’s Horizon 2020
+research and innovation programme and EFPIA.
+
+\newpage
 \newpage
 # Abstract (247 words)
 \singlespacing 
@@ -90,12 +143,12 @@ different databases calls for database-specific analysis plans that are often
 not easily transportable.
 
 The Observational Health Data Sciences and Informatics (OHDSI) collaborative
-(!!REF) has established an international network of data partners and
-researchers that aim to bring out the value of health data through large-scale
-analytics by mapping all available databases to the Observational Medical
-Outcomes Partnership (OMOP) Common Data Model (CDM) [@Overhage2012]. The
-common data structure enables analyses at a very large scale. For example, in a
-recent study [@Suchard2019], a large set of first-line treatments for
+[@hripcsak2015observational] has established an international network of data
+partners and researchers that aim to bring out the value of health data through
+large-scale analytics by mapping all available databases to the Observational
+Medical Outcomes Partnership (OMOP) Common Data Model (CDM) [@Overhage2012].
+The common data structure enables analyses at a very large scale. For example,
+in a recent study [@Suchard2019], a large set of first-line treatments for
 hypertension was compared with respect to 55 outcomes in a network of databases,
 including 4.9 million patients from around the world.
 
@@ -118,7 +171,12 @@ be performed; 3) a prediction step where internal or external prediction models
 are used to assign patient-level risk predictions; 4) an estimation step where
 absolute and relative treatment effects are estimated within risk strata; 5)
 presentation and evaluation of the results. A simple overview of the procedure
-can be seen in Figure XXXX.
+can be seen in Figure \@ref(fig:figure1).
+
+```{r figure1, echo=FALSE, fig.cap="Caption for figure 1", out.width = '100%'}
+# knitr::include_graphics(here("figures/Figure_1.tif"))
+grid::grid.raster(tiff::readTIFF(here("figures/Figure_1.tif")))
+```
 
 ## Step 1: General definition of the problem 
 The typical research aim is: "to compare the effect of treatment $T$ to a
@@ -213,7 +271,7 @@ enzyme (ACE) inhibitors to beta blockers. ACE inhibitors are among the most
 common treatment classes for hypertension, with a well-established
 effectiveness. Beta blockers, even though initially widely used for the
 treatment of hypertension, more recent trials and meta-analyses have cast doubt
-on their relative effectiveness (!!REF). As a result, newer US guidelines do
+on their relative effectiveness [@wiysonge2017beta]. As a result, newer US guidelines do
 not consider them for initial treatment for hypertension while in the EU
 guidelines combination with other antihypertensive treatments is recommended
 [@Whelton2018; @Williams2018]. However, another meta-analysis suggested that
@@ -290,25 +348,103 @@ analyses in the other databases and with other risk stratifications are
 included in the supplementary material.
 
 For each outcome and in each risk stratum there were adequate numbers of
-patients (Table XXXX). The discriminative ability of the prediction models was
-moderate in the matched development subset (c-index 0.76 for acute MI ; 0.79 for
-hospitalization with heart failure;  0.74 for stroke; ), in the general
-population (c-index 0.74 for acute MI; 0.77 for hospitalization with heart
-failure; 0.73 for stroke), in the treatment cohort (c-index for acute MI it was
-0.71, for hospitalization with heart failure was 0.76 and for stroke it was
-0.72) and in the comparator cohort (c-index for acute MI it was 0.79 for
+patients (Table \@ref(tab:table)). The discriminative ability of the prediction
+models was moderate in the matched development subset (c-index 0.76 for acute MI
+; 0.79 for hospitalization with heart failure; 0.74 for stroke; ), in the
+general population (c-index 0.74 for acute MI; 0.77 for hospitalization with
+heart failure; 0.73 for stroke), in the treatment cohort (c-index for acute MI
+it was 0.71, for hospitalization with heart failure was 0.76 and for stroke it
+was 0.72) and in the comparator cohort (c-index for acute MI it was 0.79 for
 hospitalization with heart failure was 0.79 and for stroke it was 0.75).
+\captionsetup{width=\textwidth}
+```{r table, echo=FALSE, results='asis', booktabs=TRUE}
+table <- tibble(
+  outcome = c(
+    rep("Acute myocardial infarction", 4),
+    rep("Heart failure (hosp)", 4),
+    rep("Stroke (ischemic or hemorrhagic)", 4)
+  ),
+  riskQuarter = rep(1:4, 3),
+  patientsAce = c(
+    161099, 204882, 214413, 204167,
+    146259, 188006, 218052, 230226,
+    146069, 187524, 217070, 226128
+  ),
+  personYearsAce = c(
+    276171, 372197, 393583, 351727,
+    249809, 341014, 399394, 400330,
+    294484, 340234, 397830, 393861
+  ),
+  eventsAce = c(
+    203, 534, 117, 2095,
+    228, 457, 826, 2012,
+    299, 554, 947, 1718
+  ),
+  patientsBeta = c(
+    133977, 90193, 80662, 90908,
+    126387, 84280, 83421, 98380,
+    126264, 84000, 83038, 97628
+  ),
+  personYearsBeta = c(
+    220633, 169231, 150035, 154419,
+    206706, 158425, 155222, 169139,
+    206453, 157913, 154587, 167810
+  ),
+  eventsBeta = c(
+    135, 321, 535, 1520,
+    378, 340, 570, 1773,
+    320, 351, 521, 1077
+  )
+)
+
+
+knitr::kable(
+  table,
+  format = "latex",
+  longtable = TRUE,
+  booktabs = TRUE,
+  col.names = c(
+    "Outcome", "Risk quarter",
+    "Persons", "Person years", "Events",
+    "Persons", "Person years", "Events"
+  ),
+   format.args = list(
+    big.mar = ","
+  ),
+  caption = "Number of patients, person years and events within quarters of predicted risk for hospitalization with heart failure for the 3 main outcomes of the study (acute myocardial infarction, hospitalization with heart failure and ischemic or hemorrhagic stroke)."
+) %>%
+  kableExtra::add_header_above(
+    c(
+      "", "", 
+      "ACE inhibitors" = 3,
+      "Beta blockers"  = 3
+    )
+  )
+```
 
 Relative treatment effects of ACE-inhibitors vs beta blockers increased (hazard
 ratios decreased) with increasing acute MI risk, resulting in more pronounced
 increases of absolute treatment effects (ARD) with increasing acute MI risk
-(Figure XXXX). Patients in the low risk quarter did not receive absolute
-treatment benefit (ARD -0.03%) while absolute risk was 0.54% lower (95%
-confidence interval 0.36%—0.71%) for patients in the high-risk quarter. In
-contrast, the absolute and relative effects of ACE-inhibitors on safety outcomes
-(e.g. cough and angioedema) are approximately constant or even slightly
-decreasing with increasing acute MI risk (Figure XXXX and XXXX). Similar results
-were observed in the other two databases (see supplementary material).
+(Figure \@ref(fig:figure2)). 
+
+```{r figure2, echo=FALSE, fig.cap="Overview of heterogeneity of ACE-inhibitors treatment within strata of predicted risk of acute MI. The top panel contains the observed acute rates of ACE-inhibitors and beta blockers within each quarter of predicted acute MI risk. These are derived using the KaplanMeier estimates at 730 days after inclusion. The middle panel, contains the hazard ratios of comparing ACE-inhibitors to beta blockers with regard to acute MI. These are estimated using Cox proportional hazards regression within quarters of predicted acute MI risk. The bottom panel contains absolute risk reduction for ACE-inhibitors compared to beta blockers. These are derived as the difference in Kaplan-Meier estimates at 730 after inclusion. Hazard ratios in the middle panel show a decreasing trend with increasing acute MI risk. Given the rather good discrimination of the prediction model (AUC=0.74), this results in an increasing trend for absolute benefit in favor of ACE-inhibitors with increasing risk.", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/Figure_2.tif")))
+```
+Patients in the low risk quarter did not receive absolute treatment benefit (ARD
+-0.03%) while absolute risk was 0.54% lower (95% confidence
+interval 0.36%—0.71%) for patients in the high-risk quarter. In contrast, the
+absolute and relative effects of ACE-inhibitors on safety outcomes (e.g. cough
+and angioedema) are approximately constant or even slightly decreasing with
+increasing acute MI risk (Figure \@ref(fig:figure3) and \@ref(fig:figure4)).
+Similar results were observed in the other two databases (see supplementary
+material).
+
+```{r figure3, echo=FALSE, fig.cap="Hazard ratios (relative treatment effects) for the main and safety outcomes, estimated by fitting stratified Cox regression models within quarters of predicted risk of acute myocardial infarction (MI). The four risk quarters (Q1-Q4) are defined using the internally developed model for acute MI", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/Figure_3.tif")))
+```
+```{r figure4, echo=FALSE, fig.cap="Absolute risk reduction for the main and safety outcomes, estimated by fitting stratified Cox regression models within quarters of predicted risk of acute myocardial infarction (MI). The four risk quarters (Q1-Q4) are defined using the internally developed model for acute MI", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/Figure_4.tif")))
+```
 
 This example nicely illustrates heterogeneity of absolute treatment effects,
 i.e. differences in absolute benefits and harms of ACE-inhibitors vs beta
@@ -390,17 +526,17 @@ propose to assess model performance in the separate treatment arms to evaluate
 its aptness for risk stratification.
 
 Our contribution is a translation of the PATH statement principles to the OHDSI
-methods library. Our methods encourage open science as it requires clear
+methods library. Our method encourages open science as it requires clear
 definition of the research questions translated into clear and reproducible
 cohort definitions that can easily be shared among researchers. Our R-package
 provides a standardized stepwise procedure for the assessment of HTE. This
-enables source code to be easily shared and evaluated. The results of these
-analyses can be reproduced in a straightforward manner. Researchers with access
-to different databases mapped to OMOP-CDM can also very easily extend their
-overall analyses with risk-based assessment of treatment effect heterogeneity.
-This enables collaboration among multiple sites with access to different patient
-populations. We propose that the framework is implemented any time treatment
-effect estimation in high-dimensional observational data is undertaken.
+enables source code to be easily shared and evaluated, allowing for reproducible
+research . Researchers with access to different databases mapped to OMOP-CDM can
+also very easily extend their overall analyses with risk-based assessment of
+treatment effect heterogeneity. This enables collaboration among multiple sites
+with access to different patient populations. We propose that the framework is
+implemented any time treatment effect estimation in high-dimensional
+observational data is undertaken.
 
 Recently, disease risk scores have been explored as an alternative to propensity
 scores for balancing covariates [@Glynn2012; @Hansen2008]. In our method, the
@@ -423,6 +559,7 @@ the overall results more actionable for medical decision making.
 
 \newpage
 # References
+\nolinenumbers
 \setlength{\parindent}{-0.25in}
 \setlength{\leftskip}{0.25in}
 \noindent
