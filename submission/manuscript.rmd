@@ -141,12 +141,12 @@ More recently, “predictive” HTE analyses have been described (and contrasted
 with “one-variable-at-a-time” subgroup analysis) as approaches that provide
 predictions of potential outcomes in a particular patient with one intervention
 versus an alternative, taking into account multiple relevant patient
-characteristics. One promising approach is “risk modeling”, in which treatment
-effects are estimated in strata of predicted risk [@Kent2010; @Kent2018]. Such
-a risk-based approach first stratifies patients according to baseline risk
-predictions, using either an existing or an internally developed risk prediction
-model [@Kent2010]. Then, relative and absolute treatment effects are estimated
-within risk strata.
+characteristics [@Varadhan2013]. One promising approach is “risk modeling”, in
+which treatment effects are estimated in strata of predicted risk [@Kent2010;
+@Kent2018]. Such a risk-based approach first stratifies patients according to
+baseline risk predictions, using either an existing or an internally developed
+risk prediction model [@Kent2010]. Then, relative and absolute treatment
+effects are estimated within risk strata.
   
 While these approaches have generally been recommended for application to
 clinical trials, observational databases are also an appealing substrate.
