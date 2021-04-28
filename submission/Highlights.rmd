@@ -1,0 +1,25 @@
+---
+title: "Highlights"
+output:
+    bookdown::pdf_document2: default
+geometry: margin=1.0in
+toc: false
+font-size: 11pt
+header-includes:
+  - \renewcommand*\familydefault{\sfdefault}
+  - \usepackage{setspace}
+  - \doublespacing
+  - \usepackage[left, pagewise]{lineno}
+  - \usepackage{caption}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Highlights
+  - Standardized framework for risk-based assessment of treatment effect
+    heterogeneity
+  - Always run the framework after population-level effect estimation problems
+  - Run federated analyses across different databases mapped to OMOP common data
+    model
