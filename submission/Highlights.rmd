@@ -21,5 +21,4 @@ knitr::opts_chunk$set(echo = TRUE)
   - Standardized framework for risk-based assessment of treatment effect
     heterogeneity
   - Always run the framework after population-level effect estimation problems
-  - Run federated analyses across different databases mapped to OMOP common data
-    model
+  - Enables federated analyses across databases mapped to OMOP common data model
