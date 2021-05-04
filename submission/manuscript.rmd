@@ -546,10 +546,12 @@ framework with this type of analyses.
 
 Our method provides a risk-stratified assessment of treatment effect
 heterogeneity. However, even though stratification can provide a useful overview
-for clinical interpretation, these results cannot be applied to individuals in a straightforward manner, as we are still estimating subgroup effects [@Kent2019].
-Presentation of treatment effects as a continuous function of risk would be more
-helpful, but is methodologically challenging. Future research is necessary for
-the development of methods for continuous risk-based assessment of HTE.
+for clinical interpretation, these results cannot be applied to individuals in a
+straightforward manner, as we are still estimating subgroup effects
+[@Kent2019]. Presentation of treatment effects as a continuous function of
+risk would be more helpful, but is methodologically challenging. Future research
+is necessary for the development of methods for continuous risk-based assessment
+of HTE.
 
 Externally derived and well transportable prediction models are preferred for
 analyzing treatment effect heterogeneity [@Kent2010]. In the absence of such
