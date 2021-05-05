@@ -522,15 +522,23 @@ assessment of treatment effect heterogeneity. Multiple outcomes can be evaluated
 in patient subgroups of similar baseline outcome risk. Multiple outcome risk
 stratification schemes can also be considered. However, this should be done with
 caution, as it may hinder the interpretability of the results, in a similar
-manner as typical subgroup analyses. The standardized nature of the framework
-enables transportability to multiple databases, provided that they are mapped to
-the OMOP-CDM.
+manner as typical subgroup analyses.
 
 Recently, guidelines on the application of risk modeling approaches for the
 assessment of heterogeneity of treatment effect in RCT settings have been
 proposed [@Kent2019; @PathEnE]. Our framework aims to translate these
-guidelines to the observational setting while also providing a toolset for its
-implementation. Several considerations need to be made. First, estimates may be
+guidelines to the observational setting while also providing a toolkit for its
+implementation within OHDSI. It encourages open science as it requires accurate
+definition of the research questions translated into clear and reproducible
+cohort definitions that can easily be shared among researchers. Researchers with
+access to different databases mapped to OMOP-CDM can also very easily extend
+their overall analyses with risk-based assessment of treatment effect
+heterogeneity. This enables collaboration among multiple sites with access to
+different patient populations. We propose that the framework is implemented any
+time treatment effect estimation in high-dimensional observational data is
+undertaken.
+
+Several considerations need to be made. First, estimates may be
 biased due to the observational nature of the data. We attempt to account for
 potential confounding by estimating propensity scores within strata of predicted
 risk. These scores are estimated using regularized logistic regression on a
@@ -567,18 +575,6 @@ and the comparator cohorts on the basis of propensity scores. Additionally, we
 propose to assess model performance in the separate treatment arms to evaluate
 its aptness for risk stratification.
 
-Our contribution is a translation of the PATH statement principles to the OHDSI
-methods library [@Kent2019; @PathEnE]. Our method encourages open science as
-it requires accurate definition of the research questions translated into clear
-and reproducible cohort definitions that can easily be shared among researchers.
-Our R-package provides a standardized stepwise procedure for the assessment of
-HTE. This enables source code to be easily shared and evaluated, allowing for
-reproducible research. Researchers with access to different databases mapped to
-OMOP-CDM can also very easily extend their overall analyses with risk-based
-assessment of treatment effect heterogeneity. This enables collaboration among
-multiple sites with access to different patient populations. We propose that the
-framework is implemented any time treatment effect estimation in
-high-dimensional observational data is undertaken.
 
 Recently, disease risk scores have been explored as an alternative to propensity
 scores for balancing covariates [@Glynn2012; @Hansen2008]. In our method, the
