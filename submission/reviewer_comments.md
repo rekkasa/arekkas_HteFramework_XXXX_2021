@@ -39,6 +39,61 @@
 
 # Reviewer 2
 ## Points
+  - Lack of specificity: causal parameter of interest, 
+    representativeness of the sample of the target population,
+    the explicit assumptions made and the validity of these assumptions.
+    The manuscript does not provide enough detail and precision for 
+    the key features of causal inference
+  - How is multiplicity handled (9 outcomes and, for each, produce 4 
+    treatment effectiveness estimates, without any control for 
+    multiplicity of inference)?
+  - More thorough analysis of the worked example.
+  - ABSTRACT
+    - What is the "OHDSI Methods Library"?
+  - APPROACH
+    - What is the causal question? ATE or ATT?
+    - Provide more guidance for the selection of the database
+    - Define `Target cohort`. That is not standard causal inference
+      terminology
+    - Data is used twice, once for prediction and once for estimation.
+      This seems incorrect. Justify and explain how standard errors and
+      estimates are impacted
+    - Why use PS matching before developing the prediction model? Why
+      not using other methods (e.g. weighting)?
+    - Do you estimate different risk strata for each outcome?
+    - Poolability of datasets: the error in estimation may 
+      differ across databases. Kindly indicate how poolability 
+      of the datasets is determined
+    - Why quartiles? Perhaps comment on how much variation in 
+      the predictions is required to create a fixed number of risk 
+      strata
+    - Are you re-estimating the propensity score again, within each 
+      stratum? Please provide justification, How does this impact the 
+      estimator (that is, two design effects of matching)?
+    - Step 5: Covariate balance should occur before treatment effect
+      estimation
+  - RESULTS
+    - Step 1: What is meant by "one year follow-up"? Maybe related to
+      database restrictions. What about age or comorbidity restrictions?
+    - The sampling frame for MarketScan should be described, the 
+      completeness of the data (does MarketScan Medicaid data 
+      include those under managed care arrangements or just fee 
+      for service), are you looking a dually-eligible individuals, 
+      what are the pharmacy benefits (for instance, the Medicare 
+      beneficiaries need to be enrolled in Part D), how many 
+      diagnosis codes are used (Medicaid typically records fewer 
+      than Medicare which will lead to differential ascertainment), etc
+    - Step 3: What constitutes censoring?
+    - What about competing risks (death is a competing risk)?
+    - How was covariate balance and overlap assessed?
+    - Was the proportional hazards assumption met?
+    - The matched design effects should be included in the estimation 
+      step (e.g., strata = pairs)
+    - Adjust confidence intervals for multiplicity
+    - Include an analysis assessing how sensitive findings are to 
+      unmeasured confounding
+    - Supply authors of reference 28
+
 ## Comments
 
 # Reviewer 3
