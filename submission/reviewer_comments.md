@@ -97,6 +97,7 @@
 ## Comments
 
 # Reviewer 3
+## Points
   - HTE analysis has been used in the RCT setting and not in the
     observational. Add more references about it or include a
     comparative RCT study
@@ -108,10 +109,10 @@
     to demonstrate robustness
   - Section 3.3, line 28 - 30. The sentence "We chose a time horizon 
     of 2 years after inclusion into the target cohort…" is duplicated
-## Points
 ## Comments
 
 # Reviewer 4
+## Points
   -  In abstract should spell out OMOP before using it
   -  In the legend for Fig 1 and related text in manuscript, the term 
      'quartile' would be more appropriate than 'quarter'. For item C 
@@ -135,5 +136,4 @@
     graphically suggests that the absolute and relative risks build 
     off of the treatment/comp  event rates within each hof the 
     predictive risk quartiles
-## Points
 ## Comments
