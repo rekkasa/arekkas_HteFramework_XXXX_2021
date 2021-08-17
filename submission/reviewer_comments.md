@@ -97,6 +97,17 @@
 ## Comments
 
 # Reviewer 3
+  - HTE analysis has been used in the RCT setting and not in the
+    observational. Add more references about it or include a
+    comparative RCT study
+  - Add review content and references in the `Introduction` section
+  - Emphasize the novelty of the method
+  - Move some parts from `Results` to `Methods` to improve readability
+  - Subsection 3.4: Provide more details about the estimation results
+  - Include results from other databases (currently in `Supplement`)
+    to demonstrate robustness
+  - Section 3.3, line 28 - 30. The sentence "We chose a time horizon 
+    of 2 years after inclusion into the target cohort…" is duplicated
 ## Points
 ## Comments
 
