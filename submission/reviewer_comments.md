@@ -112,5 +112,28 @@
 ## Comments
 
 # Reviewer 4
+  -  In abstract should spell out OMOP before using it
+  -  In the legend for Fig 1 and related text in manuscript, the term 
+     'quartile' would be more appropriate than 'quarter'. For item C 
+     suggest 'the prediction model to the entire population'. Also for 
+     item D in this legend suggest 'We separate into risk subgroups'
+  - page 6 line 4: quartiles instead of quarters
+  - On page 7, lines 2-3 suggest the following: 'As a proof of 
+    concept, ... to beta blockers. The former are among the most ...'
+  - page 7 line 17; suggest you consistently refer to 'efficacy' 
+    outcome rather than 'main' outcomes, as the latter suggests the 
+    safety outcomes are less important, and the two names are 
+    interchanged throughout manuscript
+  - page 8 section 3.3: lines 18 - 20 repeat the prior sentence
+  - page 8 line 26:  can you clarify whether you then present average 
+    effects from among the five quintiles that you specify within the 
+    four quartiles of predicted risk?
+  - table 1 column title"  quarter <- quartile
+  - page 9 line 12 main <- efficacy
+  - Fig 2:  suggest putting the event rate below the other two and 
+    invert its direction, this will increase interpretability and 
+    graphically suggests that the absolute and relative risks build 
+    off of the treatment/comp  event rates within each hof the 
+    predictive risk quartiles
 ## Points
 ## Comments
