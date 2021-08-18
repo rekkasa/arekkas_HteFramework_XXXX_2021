@@ -97,6 +97,9 @@
     - Supply authors of reference 28
 
 ## Comments
+  - We demonstrate covariate balance and overlap in the supplement for
+    a single database. Should we do it for all and/or move to main
+    manuscript?
 
 # Reviewer 3
 ## Points
@@ -140,4 +143,5 @@
     predictive risk quartiles
 ## Comments
 # ToDo
-  - [ ] Create graphs demonstrating results across all databases
+  - Create graphs demonstrating results across all databases
+  - Assess proportional hazard assumption
