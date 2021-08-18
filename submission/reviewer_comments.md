@@ -36,6 +36,8 @@
       said that it is easily applicable and highly informative: in 
       what respect? how is it demonstrated in the paper?
 ## Comments
+  - Figure **is** referenced in text (p4.7). Maybe need to expand a bit
+    more on the presentation of the figure
 
 # Reviewer 2
 ## Points
@@ -137,3 +139,5 @@
     off of the treatment/comp  event rates within each hof the 
     predictive risk quartiles
 ## Comments
+# ToDo
+  > Create graphs demonstrating results across all databases
