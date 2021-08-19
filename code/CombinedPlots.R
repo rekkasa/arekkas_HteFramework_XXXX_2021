@@ -1,16 +1,16 @@
 library(tidyverse)
 
 mappedOverallRelativeResults <- readRDS(
-  "~/Documents/Projects/arekkas_HteFramework_XXXX_2021/.scratch/AceBeta9Outcomes/data/mappedOverallRelativeResults.rds"
+  "data/processed/mappedOverallRelativeResults.rds"
 )
 mappedOverallAbsoluteResults <- readRDS(
-  "~/Documents/Projects/arekkas_HteFramework_XXXX_2021/.scratch/AceBeta9Outcomes/data/mappedOverallAbsoluteResults.rds"
+  "data/processed/mappedOverallAbsoluteResults.rds"
 )
 map_outcomes <- readRDS(
-  "~/Documents/Projects/arekkas_HteFramework_XXXX_2021/.scratch/AceBeta9Outcomes/data/map_outcomes.rds"
+  "data/processed/map_outcomes.rds"
 )
 map_exposures <- readRDS(
-  "~/Documents/Projects/arekkas_HteFramework_XXXX_2021/.scratch/AceBeta9Outcomes/data/map_exposures.rds"
+  "data/processed/map_exposures.rds"
 )
 
 prepareDataset <- function(data) {
