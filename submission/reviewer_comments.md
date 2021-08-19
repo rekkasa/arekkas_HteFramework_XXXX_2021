@@ -38,6 +38,7 @@
 ## Comments
   - Figure **is** referenced in text (p4.7). Maybe need to expand a bit
     more on the presentation of the figure
+  - We are not using a case-control design.
 
 # Reviewer 2
 ## Points

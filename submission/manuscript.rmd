@@ -159,21 +159,45 @@ treatment effects are subject to confounding, while the unique structure of
 different databases calls for database-specific analysis plans that often are
 not easily transportable.
 
+< < ADD > >
+
+***Because of the latter issue, running analyses at scale demands a big investment
+of time and effort, as researchers are forced to map their analysis plans to the
+databases available to them.***
+
+< < ADD > >
+
 The Observational Health Data Sciences and Informatics (OHDSI) collaborative has
 established an international network of data partners and researchers that aim
 to bring out the value of health data through large-scale analytics by mapping
 all available databases to the Observational Medical Outcomes Partnership (OMOP)
-Common Data Model (CDM) [@hripcsak2015observational; @Overhage2012]. The
-common data structure enables analyses at a very large scale. We aimed to
-develop a framework for risk-based assessment of treatment effect heterogeneity
+Common Data Model (CDM) [@hripcsak2015observational; @Overhage2012]. 
+
+< < EDIT > > 
+
+***We aimed to develop a framework for implementing risk-based assessment of
+treatment heterogeneity in high-dimensional observational data, extending the
+existing guidelines of the RCT setting. Our contribution provides an
+out-of-the-box solution for implementing such analyses at scale within the OHDSI
+network, taking advantage of the OMOP-CDM.***
+
+< < EDIT > > 
+
+< < OLD > >
+
+We aimed to develop a framework for risk-based assessment of treatment effect heterogeneity
 in high-dimensional observational data, which extends the existing guidelines of
-the RCT setting. We implemented the framework using existing OHDSI methods for
-use in the OMOP-CDM, including the patient-level prediction framework and the
-population-level effect estimation framework based on new-user cohort design
-[@Reps2018; @Ryan2013]. As a proof-of-concept we analyzed heterogeneity of the
-effects of first-line hypertension treatment: we compared the effect of
-angiotensin converting enzyme (ACE) inhibitors to beta blockers on 9 outcomes
-across three different US claims databases.
+the RCT setting. 
+
+< < OLD > >
+
+We implemented the framework using existing OHDSI methods including the
+patient-level prediction framework and the population-level effect estimation
+framework based on new-user cohort design [@Reps2018; @Ryan2013]. As a
+proof-of-concept we analyzed heterogeneity of the effects of first-line
+hypertension treatment: we compared the effect of angiotensin converting enzyme
+(ACE) inhibitors to beta blockers on 9 outcomes across three different US claims
+databases.
 
 # Materials and Methods
 
@@ -235,6 +259,16 @@ comparator cohort. To avoid deferentially fitting the prediction model to
 patients across treatment arms, thus introducing spurious interactions with
 treatment [@Burke2014; @vanKlaveren2019], we develop the patient-level
 prediction model in the propensity score-matched (1:1) subset of the population.
+
+< < MOVE: ps_matching > >
+
+< < ADD > >
+
+***Other methods of fitting the propensity scores, such as random forest and
+others (REF) can also be considered.***
+
+< < ADD > >
+
 Finally, we need to define the time horizon within which we aim to make
 predictions and we also need to select the machine-learning algorithm we want to
 use to generate patient-level predictions. Currently, the available options are
@@ -352,10 +386,17 @@ We used the following databases:
 
 We developed separate prediction models for all efficacy outcomes (acute MI,
 hospitalization with heart failure and hemorrhagic or ischemic stroke) in each
-database. More specifically, we first estimated propensity scores using LASSO
+database. 
+
+< < MOVE: ps_matching > >
+
+***More specifically, we first estimated propensity scores using LASSO
 logistic regression and a large set of baseline covariates including
-demographics, drug exposures, diagnoses, measurements and medical devices. The
-prediction models were estimated on the propensity score matched (1:1) subset of
+demographics, drug exposures, diagnoses, measurements and medical devices.***
+
+< < MOVE > >
+
+The prediction models were estimated on the propensity score matched (1:1) subset of
 the population, using caliper of 0.2 and after excluding patients having the
 outcomes any time prior to treatment initiation. We chose a time horizon of 2
 years after inclusion into the target cohort. For this demonstration, we
