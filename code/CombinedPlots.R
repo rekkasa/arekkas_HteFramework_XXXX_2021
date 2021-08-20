@@ -53,7 +53,7 @@ relative <- prepareDataset(mappedOverallRelativeResults) %>%
     stratOutcome == "Acute myocardial infarction"
   )
 
-ggplot(
+relativePlot <- ggplot(
   data = relative,
   aes(
     y = estOutcome,
@@ -93,10 +93,25 @@ ggplot(
     legend.position = "top",
     legend.title = element_blank(),
     axis.title.y = element_blank(),
+    axis.title.x = element_text(size = 20),
+    axis.text    = element_text(size = 15),
+    legend.text  = element_text(size = 15), 
     strip.background = element_rect(
       fill = "#ffffff"
-    )
+    ),
+    strip.text = element_text(size = 15)
   )
+
+ggsave(
+  "figures/CombinedRelative.tiff",
+  absolutePlot, 
+  compression = "lzw", 
+  width       = 600, 
+  height      = 300,
+  units       = "mm",
+  dpi         = 300
+)
+
 
 
 absolute <- prepareDataset(mappedOverallAbsoluteResults) %>%
@@ -105,7 +120,7 @@ absolute <- prepareDataset(mappedOverallAbsoluteResults) %>%
     estOutcome != "Cough"
   )
 
-ggplot(
+absolutePlot <- ggplot(
   data = absolute,
   aes(
     y = estOutcome,
@@ -145,9 +160,22 @@ ggplot(
     legend.position = "top",
     legend.title = element_blank(),
     axis.title.y = element_blank(),
+    axis.title.x = element_text(size = 20),
+    axis.text    = element_text(size = 15),
+    legend.text  = element_text(size = 15), 
     strip.background = element_rect(
       fill = "#ffffff"
-    )
-  ) %>%
-  ggsave("figures/CombinedAbsolute.tif")
+    ),
+    strip.text = element_text(size = 15)
+  )
+
+ggsave(
+  "figures/CombinedAbsolute.tiff",
+  absolutePlot, 
+  compression = "lzw", 
+  width       = 600, 
+  height      = 300,
+  units       = "mm",
+  dpi         = 300
+)
 
