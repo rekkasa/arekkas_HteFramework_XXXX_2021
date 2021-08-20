@@ -148,5 +148,6 @@ ggplot(
     strip.background = element_rect(
       fill = "#ffffff"
     )
-  )
+  ) %>%
+  ggsave("figures/CombinedAbsolute.tif")
 
