@@ -104,7 +104,7 @@ relativePlot <- ggplot(
 
 ggsave(
   "figures/CombinedRelative.tiff",
-  absolutePlot, 
+  relativePlot, 
   compression = "lzw", 
   width       = 600, 
   height      = 300,
