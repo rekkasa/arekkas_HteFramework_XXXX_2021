@@ -109,6 +109,7 @@
   - We demonstrate covariate balance and overlap in the supplement for
     a single database. Should we do it for all and/or move to main
     manuscript?
+  - Need to emphasize the shiny app for going through all of the analyses
   - Write paragraph and include 1 figure about the combined results
     across all databases
   - Part of the response for the multiplicity issues could be the part
@@ -117,7 +118,8 @@
     it's up to you to correct for multiplicity (Discussion section, 
     Lancet). The same for pooling?
   - Reason for re-estimating PS in strata. Find references from
-    subgroup analyses in observational data
+    subgroup analyses in observational data. Supporting literature
+    is [Izem et al](https://doi.org/10.1080/10543406.2020.1730868)
 
 # Reviewer 3
 ## Points
@@ -133,6 +135,8 @@
   - Section 3.3, line 28 - 30. The sentence "We chose a time horizon 
     of 2 years after inclusion into the target cohort…" is duplicated
 ## Comments
+  - Finding a comparative RCT study proved to be quite hard, due to
+    them always being placebo-controlled (ref Kent trials)
 
 # Reviewer 4
 ## Points
