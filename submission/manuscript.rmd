@@ -177,9 +177,9 @@ Common Data Model (CDM) [@hripcsak2015observational; @Overhage2012].
 
 ***We aimed to develop a framework for implementing risk-based assessment of
 treatment heterogeneity in high-dimensional observational data, extending the
-existing guidelines of the RCT setting. Our contribution provides an
-out-of-the-box solution for implementing such analyses at scale within the OHDSI
-network, taking advantage of the OMOP-CDM.***
+existing guidelines of the RCT setting. Our publicly available package provides
+an out-of-the-box solution for implementing such analyses at scale within the
+OHDSI network, taking advantage of the OMOP-CDM.***
 
 < < EDIT > > 
 

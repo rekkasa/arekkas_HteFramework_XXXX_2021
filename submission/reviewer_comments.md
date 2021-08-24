@@ -38,7 +38,15 @@
 ## Comments
   - Figure **is** referenced in text (p4.7). Maybe need to expand a bit
     more on the presentation of the figure
-  - We are not using a case-control design.
+  - We are not using a case-control design. It's maybe useful
+    to define which setting is required (T-C-O cohorts, etc). Isn't that
+    already described in Step 1, though?
+  - Figure 1 is not really an overview of the steps, but rather a
+    presentation of steps 3 and 4. Maybe move later in the text?
+  - Evaluation should always be carried out before the results. Since
+    analyses are carried out in one go, evaluation metrics/graphics
+    are generated at the same time with the results. It's in the hands
+    of the researcher to thoroughly go over the evaluation first
 
 # Reviewer 2
 ## Points
@@ -103,6 +111,13 @@
     manuscript?
   - Write paragraph and include 1 figure about the combined results
     across all databases
+  - Part of the response for the multiplicity issues could be the part
+    from the LEGEND-Hypertension paper: the package provides you with 
+    all the results across as many data sources as you like and then
+    it's up to you to correct for multiplicity (Discussion section, 
+    Lancet). The same for pooling?
+  - Reason for re-estimating PS in strata. Find references from
+    subgroup analyses in observational data
 
 # Reviewer 3
 ## Points
