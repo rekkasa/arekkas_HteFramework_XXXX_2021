@@ -117,8 +117,7 @@
     all the results across as many data sources as you like and then
     it's up to you to correct for multiplicity (Discussion section, 
     Lancet). The same for pooling?
-  - Reason for re-estimating PS in strata. Find references from
-    subgroup analyses in observational data. Supporting literature
+  - Reason for re-estimating PS in strata: supporting literature
     is [Izem et al](https://doi.org/10.1080/10543406.2020.1730868)
 
 # Reviewer 3
