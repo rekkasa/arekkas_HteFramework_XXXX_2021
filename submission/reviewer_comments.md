@@ -101,6 +101,8 @@
   - We demonstrate covariate balance and overlap in the supplement for
     a single database. Should we do it for all and/or move to main
     manuscript?
+  - Write paragraph and include 1 figure about the combined results
+    across all databases
 
 # Reviewer 3
 ## Points
