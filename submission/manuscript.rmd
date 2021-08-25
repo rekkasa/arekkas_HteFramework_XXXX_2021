@@ -232,8 +232,11 @@ research aim; 2) identification of the database within which the analyses will
 be performed; 3) a prediction step where internal or external prediction models
 are used to assign patient-level risk predictions; 4) an estimation step where
 absolute and relative treatment effects are estimated within risk strata; 5)
-presentation and evaluation of the results. An overview of the procedure
-can be seen in Figure \@ref(fig:figure1).
+presentation and evaluation of the results. We developed an open-source
+R-package for the implementation of the proposed framework and made it publicly
+available. The source code can be found at
+<https://github.com/OHDSI/RiskStratifiedEstimation>. An overview of the
+procedure can be seen in Figure \@ref(fig:figure1).
 
 ```{r figure1, echo=FALSE, fig.cap="(A) Starting from a treatment (top), a comparator (bottom) and an outcome (middle) cohort we estimate the propensity scores on the entire target population. (B) We match patients on the propensity scores and estimate the prediction model. Since we match patients we develop the prediction model on smaller subset of the initial population and, therefore, the number of patients is smaller in B compared to A. (C) We apply the prediction model on the entire population (green: lower 25\\% of the risk distribution; yellow: patients with risk between 25\\% and 50\\% of the risk distribution; orange: patients with risk between 50\\% and 75\\% of the risk distribution; red: patients at risk higher than 75\\% of the risk distribution). (D) We separate in risk subgroups, here quarters. Within risk quarters propensity scores are estimated again and relative and absolute treatment effects are estimated.", out.width = '100%'}
 # knitr::include_graphics(here("figures/Figure_1.tif"))
@@ -265,11 +268,13 @@ duration of time. The term can be used interchangeably with the term phenotype.
 
 ## Step 2: Identification of the database
 
+
 The aim of this step is the inclusion of databases that represent the patient
-population of interest. The inclusion of multiple databases potentially
-increases the generalizability of results. Furthermore, the cohorts should
-preferably have adequate sample size to ensure precise effect estimation, even
-within smaller risk strata.
+population of interest. It is required that the databases are mapped to the
+OMOP-CDM. The inclusion of multiple databases potentially increases the
+generalizability of results. Furthermore, the cohorts should preferably have
+adequate sample size to ensure precise effect estimation, even within smaller
+risk strata.
 
 ## Step 3: Prediction
 
