@@ -136,6 +136,29 @@ from low power and multiplicity issues [@Yusuf1991; @FernandezyGarcia2010].
 However, even with well-established constant relative effects, treatment benefit
 (or harm) may vary substantially on the absolute scale.
 
+\> > EDIT > >
+
+***In recent years, a large number of methods has been developed for the
+assessment of HTE, mainly in the RCT setting. Earlier work suggested separating
+HTE analyses into exploratory, confirmatory, descriptive and predictive
+[@Varadhan2013]. Exploratory analyses focus on hypothesis generation,
+confirmatory analyses test subgroup effect hypotheses, descriptive analyses aim
+at facilitating future synthesis of subgroup effects and predictive analyses
+predict probabilities of benefit or harm in individual patients. Predictive HTE
+approaches can be further subdivided into risk modeling, treatment effect
+modeling and optimal treatment regime methods, based on the reference class used
+for defining patient similarity when making individualized predictions or
+recommendations [@Rekkas2020]. We focus on “risk modeling” approaches where
+patients are divided into risk strata using either an existing or an internally
+developed risk prediction model. Risk-stratum-specific estimates provide an
+overview of the evolution of treatment effects with increasing risk both on the
+relative and the absolute scale. Recently, systematic guidance on the
+application of such methods has been developed [@Kent2010; @Kent2018].***
+
+< < EDIT < <
+
+\> > OLD > >
+
 Predictive HTE analyses have been described as approaches that
 provide predictions of potential outcomes in a particular patient with one
 intervention versus an alternative, taking into account multiple relevant
@@ -147,6 +170,7 @@ increasing risk both on the relative and the absolute scale. Recently,
 systematic guidance on the application of such methods has been developed
 [@Kent2010; @Kent2018].
 
+< < OLD < < 
 
 While these approaches were developed for application in randomized controlled
 trials (RCTs), observational databases are also an appealing substrate.
@@ -159,13 +183,13 @@ treatment effects are subject to confounding, while the unique structure of
 different databases calls for database-specific analysis plans that often are
 not easily transportable.
 
-< < ADD > >
+\> > ADD > >
 
 ***Because of the latter issue, running analyses at scale demands a big investment
 of time and effort, as researchers are forced to map their analysis plans to the
 databases available to them.***
 
-< < ADD > >
+< < ADD < <
 
 The Observational Health Data Sciences and Informatics (OHDSI) collaborative has
 established an international network of data partners and researchers that aim
@@ -173,7 +197,7 @@ to bring out the value of health data through large-scale analytics by mapping
 all available databases to the Observational Medical Outcomes Partnership (OMOP)
 Common Data Model (CDM) [@hripcsak2015observational; @Overhage2012]. 
 
-< < EDIT > > 
+\> > EDIT > > 
 
 ***We aimed to develop a framework for implementing risk-based assessment of
 treatment heterogeneity in high-dimensional observational data, extending the
@@ -181,15 +205,15 @@ existing guidelines of the RCT setting. Our publicly available package provides
 an out-of-the-box solution for implementing such analyses at scale within the
 OHDSI network, taking advantage of the OMOP-CDM.***
 
-< < EDIT > > 
+< < EDIT < <
 
-< < OLD > >
+\> > OLD > >
 
 We aimed to develop a framework for risk-based assessment of treatment effect heterogeneity
 in high-dimensional observational data, which extends the existing guidelines of
 the RCT setting. 
 
-< < OLD > >
+< < OLD < <
 
 We implemented the framework using existing OHDSI methods including the
 patient-level prediction framework and the population-level effect estimation
@@ -262,12 +286,12 @@ prediction model in the propensity score-matched (1:1) subset of the population.
 
 < < MOVE: ps_matching > >
 
-< < ADD > >
+\> > ADD > >
 
 ***Other methods of fitting the propensity scores, such as random forest and
 others (REF) can also be considered.***
 
-< < ADD > >
+< < ADD < <
 
 Finally, we need to define the time horizon within which we aim to make
 predictions and we also need to select the machine-learning algorithm we want to
@@ -291,14 +315,13 @@ within risk strata which we then use to match patients from different treatment
 cohorts or stratify them into groups with similar propensity scores or to weigh
 each patient's contribution to the estimation process [@Austin2011].
 
-## Step 5: Result presentation and evaluation
+## Step 5: Evaluation and presentation of results
 
-In the presence of a positive treatment effect and a well-discriminating
-prediction model we expect an increasing pattern of the differences in the
-absolute scale, even if treatment effects remain constant on the relative scale
-across risk strata. Results should be presented side-by-side on a
-forest-plot-like format, so that the evolution of treatment effects across risk
-strata is visible both on the relative and the absolute scale.
+In each risk stratum we need to evaluate if adequate covariate balance was
+achieved accounting for measured confounding. If that is not the case,
+interpretation of the results may be problematic. Common approaches include
+evaluation of the overlap of propensity score distributions and calculation of
+standardized covariate differences before and after propensity score adjustment.
 
 A performance overview of the derived prediction models, including
 discrimination and calibration both in the propensity score matched subset, the
@@ -314,11 +337,12 @@ this case, risk stratified analysis of HTE can be more effective in singling out
 patient subgroups that stand to benefit (or be harmed) most by treatment in
 question.
 
-In each risk stratum we need to evaluate if adequate covariate balance was
-achieved accounting for measured confounding. If that is not the case,
-interpretation of the results may be problematic. Common approaches include
-evaluation of the overlap of propensity score distributions and calculation of
-standardized covariate differences before and after propensity score adjustment.
+In the presence of a positive treatment effect and a well-discriminating
+prediction model we expect an increasing pattern of the differences in the
+absolute scale, even if treatment effects remain constant on the relative scale
+across risk strata. Results should be presented side-by-side on a
+forest-plot-like format, so that the evolution of treatment effects across risk
+strata is visible both on the relative and the absolute scale.
 
 # Results
 
@@ -388,13 +412,13 @@ We developed separate prediction models for all efficacy outcomes (acute MI,
 hospitalization with heart failure and hemorrhagic or ischemic stroke) in each
 database. 
 
-< < MOVE: ps_matching > >
+\> > MOVE: ps_matching > >
 
 ***More specifically, we first estimated propensity scores using LASSO
 logistic regression and a large set of baseline covariates including
 demographics, drug exposures, diagnoses, measurements and medical devices.***
 
-< < MOVE > >
+< < MOVE < <
 
 The prediction models were estimated on the propensity score matched (1:1) subset of
 the population, using caliper of 0.2 and after excluding patients having the
