@@ -47,6 +47,13 @@
     analyses are carried out in one go, evaluation metrics/graphics
     are generated at the same time with the results. It's in the hands
     of the researcher to thoroughly go over the evaluation first
+  - Add references to OHDSI studies that only look at subgroup analyses
+    to assess HTE as response to "What is the purpose of these (several
+    figures) results?... what is the baseline? to what is it compared?..."
+  - Add reference to the package in `Materials and methods` so it doesn't
+    only appear in the discussion
+  - Step 5 should be "Evaluation and result presntation" so that evaluation
+    comes first
 
 # Reviewer 2
 ## Points
