@@ -126,7 +126,12 @@
     Lancet). The same for pooling?
   - Reason for re-estimating PS in strata: supporting literature
     is [Izem et al](https://doi.org/10.1080/10543406.2020.1730868)
-
+  - In the question do you want to do ATE or ATT part of the answer
+    should be that this is not a limiting factor for our framework.
+    It depends on what the researcher wants to do. The framework can
+    accommodate ATE by choosing stratification on the PS (currently)
+    IPTW (under development) and ATT by choosing a matching scheme
+    of the ones available in CohortMethod.
 # Reviewer 3
 ## Points
   - HTE analysis has been used in the RCT setting and not in the
