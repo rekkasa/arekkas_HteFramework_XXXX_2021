@@ -92,28 +92,28 @@ research and innovation programme and EFPIA.
 \newpage
 # Abstract {-}
 \singlespacing 
-One of the aims of the Observational Health Data Sciences and Informatics (OHDSI)
-initiative is population-level treatment effect estimation in large
+One of the aims of the Observational Health Data Sciences and Informatics
+(OHDSI) initiative is population-level treatment effect estimation in large
 observational databases. Since treatment effects are well-known to vary across
 groups of patients with different baseline risk, we aimed to extend the OHDSI
-methods library with a framework for risk-based assessment of treatment effect
-heterogeneity. The proposed framework consists of five steps: 1) definition of
-the problem, i.e. the population, the treatment, the comparator and the
-outcome(s) of interest; 2) identification of relevant databases; 3) development
-of a prediction model for the outcome(s) of interest; 4) estimation of
-propensity scores within strata of predicted risk and estimation of relative and
-absolute treatment effect within strata of predicted risk; 5) evaluation and
-presentation of results. We demonstrate our framework by evaluating
-heterogeneity of the effect of angiotensin-converting enzyme (ACE) inhibitors
-versus beta blockers on a set of 9 outcomes of interest across three
+library of open-source tools with a framework for risk-based assessment of
+treatment effect heterogeneity. The proposed framework consists of five
+steps: 1) definition of the problem, i.e. the population, the treatment, the
+comparator and the outcome(s) of interest; 2) identification of relevant
+databases; 3) development of a prediction model for the outcome(s) of
+interest; 4) estimation of propensity scores within strata of predicted risk and
+estimation of relative and absolute treatment effect within strata of predicted
+risk; 5) evaluation and presentation of results. We demonstrate our framework by
+evaluating heterogeneity of the effect of angiotensin-converting enzyme (ACE)
+inhibitors versus beta blockers on a set of 9 outcomes of interest across three
 observational databases. With increasing risk of acute myocardial infarction we
 observed increasing absolute benefits, i.e. from -0.03% to 0.54% in the lowest
 to highest risk groups. Cough-related absolute harms decreased from 4.1%
-to 2.6%. The proposed framework may be useful for the evaluation of heterogeneity
-of treatment effect on observational data that are mapped to the OMOP Common
-Data Model. The proof of concept study demonstrates its feasibility in large
-observational data. Further insights may arise by application to safety and
-effectiveness questions across the global data network. 
+to 2.6%. The proposed framework may be useful for the evaluation of
+heterogeneity of treatment effect on observational data that are mapped to the
+OMOP Common Data Model. The proof of concept study demonstrates its feasibility
+in large observational data. Further insights may arise by application to safety
+and effectiveness questions across the global data network. 
 
 \vspace{10mm}
 
@@ -247,7 +247,23 @@ grid::grid.raster(tiff::readTIFF(here("figures/Figure_1.tif")))
 
 The typical research aim is: "to compare the effect of treatment $T$ to a
 comparator treatment $C$ in patients with disease $D$ with respect to outcomes
-$O_1,\dots,O_n$". At least three cohorts are defined:
+$O_1,\dots,O_n$". 
+
+\> > ADD > >
+
+***Cohort definitions are crucial for this step of the framework. We define a
+cohort as the set of patients who satisfy one or more inclusion criteria for a
+duration of time. A cohort within the OHDSI setting is more than a set of
+specific clinical codes, providing a definition of a logic for how to use that
+code set. All cohort definitions consist of: an entry event, i.e. the time a
+patient enters a cohort; a set of inclusion criteria applied to the initial
+event cohort to further restrict the set of people, resulting in the
+construction of the construction of the qualifying cohort; cohort exit criteria
+that terminate the patient's presence in the cohort. Cohort definitions are
+transportable, meaning they can be implemented in any database, provided that it
+is mapped to the OMOP-CDM.***
+
+< < ADD < <
 
   - A single treatment cohort ($T$) which includes patients with disease $D$
     receiving the target treatment of interest. For example, a set of
@@ -262,12 +278,8 @@ $O_1,\dots,O_n$". At least three cohorts are defined:
     developing the outcomes of interest. For example, the set of patients in a
     database that have at least one occurrence of acute myocardial infarction in
     their record.
-    
-Note "cohort" refers to a set of persons who satisfy one or more criteria for a
-duration of time. The term can be used interchangeably with the term phenotype.
 
 ## Step 2: Identification of the database
-
 
 The aim of this step is the inclusion of databases that represent the patient
 population of interest. It is required that the databases are mapped to the
@@ -281,12 +293,17 @@ risk strata.
 We adopt the standardized framework for the generation of patient-level
 prediction models using observational data that ensures adherence to existing
 guidelines [@Collins2015; @Moons2015]. This prediction framework requires the
-definition of two essential cohorts: a target cohort and an outcome cohort.
+definition of two essential cohorts: a target cohort, i.e. a set of patients
+that satisfy one or more inclusion criteria for a duration of time, and an
+outcome cohort.
 
 To generate the target cohort we pool the already defined treatment cohort and
-comparator cohort. To avoid deferentially fitting the prediction model to
-patients across treatment arms, thus introducing spurious interactions with
-treatment [@Burke2014; @vanKlaveren2019], we develop the patient-level
+comparator cohort. Further restrictions can be applied on the target cohort to
+construct the final population on which the prediction model will be developed
+(e.g. exclude patients with a prior outcome in their history, before being
+included in the target cohort). To avoid deferentially fitting the prediction
+model to patients across treatment arms, thus introducing spurious interactions
+with treatment [@Burke2014; @vanKlaveren2019], we develop the patient-level
 prediction model in the propensity score-matched (1:1) subset of the population.
 
 < < MOVE: ps_matching > >
@@ -419,9 +436,12 @@ database.
 
 \> > MOVE: ps_matching > >
 
-***More specifically, we first estimated propensity scores using LASSO
+***More specifically, we first estimate propensity scores using LASSO
 logistic regression and a large set of baseline covariates including
-demographics, drug exposures, diagnoses, measurements and medical devices.***
+demographics, drug exposures, diagnoses, measurements and medical devices. We
+match patients 1-1 using a caliper, i.e. the maximum distance that is acceptable
+for any match. The default value we use is 0.2 on the standardized logit scale
+for the propensity scores.***
 
 < < MOVE < <
 
@@ -632,11 +652,30 @@ risk would be more helpful, but is methodologically challenging. Future research
 is necessary for the development of methods for continuous risk-based assessment
 of HTE.
 
+
+\> > EDIT > >
+
+***Ideally, externally derived and adequately validated prediction model would
+be preferred for analyzing treatment effect heterogeneity [@Kent2010]. In the
+absence of such prediction models an internally-developed risk prediction model
+can be considered. Earlier simulations of RCT studies have shown that internal
+models developed on the combined treatment and control arms blinded to treatment
+gave relatively unbiased estimates of treatment effect across the spectrum of
+risk [@Burke2014].***
+
+< < EDIT < <
+
+\> > OLD > >
+
 Externally derived and well transportable prediction models are preferred for
 analyzing treatment effect heterogeneity [@Kent2010]. In the absence of such
 prediction models, simulations of RCTs have shown that internal models can be
 used to provide unbiased estimates of treatment effect across the spectrum of
-baseline risk [@Burke2014]. However, in observational databases treatment arms
+baseline risk [@Burke2014].
+
+< < OLD < <
+
+However, in observational databases treatment arms
 may significantly differ in sample size. Because the prediction model will
 possibly better fit to the larger treatment arm, spurious treatment-covariate
 interactions may be introduced in the prediction model, leading to sub-optimal
