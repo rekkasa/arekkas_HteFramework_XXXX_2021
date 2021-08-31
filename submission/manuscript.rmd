@@ -364,9 +364,10 @@ question.
 In the presence of a positive treatment effect and a well-discriminating
 prediction model we expect an increasing pattern of the differences in the
 absolute scale, even if treatment effects remain constant on the relative scale
-across risk strata. Results should be presented side-by-side on a
-forest-plot-like format, so that the evolution of treatment effects across risk
-strata is visible both on the relative and the absolute scale.
+across risk strata. Due to this scale-dependence of treatment effect
+heterogeneity, results should be assessed both on the relative and the absolute
+scale. We find that a side-by-side presentation on a forest-like format can give
+a very good representation of our results.
 
 # Results
 
