@@ -337,7 +337,7 @@ within risk strata which we then use to match patients from different treatment
 cohorts or stratify them into groups with similar propensity scores or to weigh
 each patient's contribution to the estimation process [@Austin2011].
 
-## Step 5: Evaluation and presentation of results
+## Step 5: Evaluation
 
 In each risk stratum we need to evaluate if adequate covariate balance was
 achieved accounting for measured confounding. If that is not the case,
@@ -358,6 +358,8 @@ heterogeneity, thus making estimated average treatment effects uninformative. In
 this case, risk stratified analysis of HTE can be more effective in singling out
 patient subgroups that stand to benefit (or be harmed) most by treatment in
 question.
+
+## Step 6: Presentation of results
 
 In the presence of a positive treatment effect and a well-discriminating
 prediction model we expect an increasing pattern of the differences in the
