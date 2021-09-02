@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 library(tidyverse)
 
 mappedOverallRelativeResults <- readRDS(
@@ -116,8 +118,8 @@ ggsave(
 
 absolute <- prepareDataset(mappedOverallAbsoluteResults) %>%
   filter(
-    stratOutcome == "Acute myocardial infarction",
-    estOutcome != "Cough"
+    stratOutcome == "Acute myocardial infarction"
+    # estOutcome != "Cough"
   )
 
 absolutePlot <- ggplot(

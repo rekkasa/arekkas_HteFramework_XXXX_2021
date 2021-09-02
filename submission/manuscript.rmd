@@ -485,49 +485,12 @@ it was 0.71, for hospitalization with heart failure was 0.76 and for stroke it
 was 0.72) and in the comparator cohort (c-index for acute MI it was 0.79 for
 hospitalization with heart failure was 0.79 and for stroke it was 0.75).
 \captionsetup{width=\textwidth}
-```{r table, echo=FALSE, results='asis', booktabs=TRUE}
-table <- tibble(
-  outcome = c(
-    "Acute myocardial infarction",
-    rep("", 3),
-    "Heart failure (hosp)",
-    rep("", 3),
-    "Stroke (ischemic or hemorrhagic)",
-    rep("", 3)
-  ),
-  riskQuarter = rep(1:4, 3),
-  patientsAce = c(
-    161099, 204882, 214413, 204167,
-    146259, 188006, 218052, 230226,
-    146069, 187524, 217070, 226128
-  ),
-  personYearsAce = c(
-    276171, 372197, 393583, 351727,
-    249809, 341014, 399394, 400330,
-    294484, 340234, 397830, 393861
-  ),
-  eventsAce = c(
-    203, 534, 117, 2095,
-    228, 457, 826, 2012,
-    299, 554, 947, 1718
-  ),
-  patientsBeta = c(
-    133977, 90193, 80662, 90908,
-    126387, 84280, 83421, 98380,
-    126264, 84000, 83038, 97628
-  ),
-  personYearsBeta = c(
-    220633, 169231, 150035, 154419,
-    206706, 158425, 155222, 169139,
-    206453, 157913, 154587, 167810
-  ),
-  eventsBeta = c(
-    135, 321, 535, 1520,
-    378, 340, 570, 1773,
-    320, 351, 521, 1077
-  )
-)
-
+```{r table, echo=FALSE, warning=FALSE, message=FALSE, results='asis', booktabs=TRUE}
+table <- readr::read_csv(
+  here::here("data/processed/table1.csv"),
+  na = character()
+) %>%
+  select(-database)
 
 knitr::kable(
   table,
@@ -542,8 +505,11 @@ knitr::kable(
    format.args = list(
     big.mar = ","
   ),
-  caption = "Number of patients, person years and events within quarters of predicted risk for hospitalization with heart failure for the 3 main outcomes of the study (acute myocardial infarction, hospitalization with heart failure and ischemic or hemorrhagic stroke)."
+  caption = "Number of patients, person years and events within quarters of predicted risk for hospitalization with heart failure for the 3 main outcomes of the study (acute myocardial infarction, hospitalization with heart failure and ischemic or hemorrhagic stroke) across the 3 databases."
 ) %>%
+  kableExtra::group_rows("CCAE", 1, 12) %>%
+  kableExtra::group_rows("MDCD", 13, 24) %>%
+  kableExtra::group_rows("MDCR", 25, 36) %>%
   kableExtra::add_header_above(
     c(
       "", "", 
@@ -551,6 +517,40 @@ knitr::kable(
       "Beta blockers"  = 3
     )
   )
+```
+
+```{r tableAucs, echo=FALSE, results='asis', booktabs=TRUE}
+table <- tibble(
+  population = c(
+    "Matched set",
+    "Treatment cohort",
+    "Comparator cohort",
+    "Entire population"
+  ),
+  ccae = c(
+    75.78, 70.65, 79.1, 74.06
+  ),
+  mdcd = c(
+    78.12, 78.29, 80.26, 79.46
+  ),
+  mdcr = c(
+    71.09, 69.03, 68.53, 69.07
+  )
+)
+
+knitr::kable(
+  table,
+  format = "latex",
+  longtable = TRUE,
+  booktabs = TRUE,
+  col.names = c(
+    "Population", "CCAE", "MDCD", "MDCR"
+  ),
+   format.args = list(
+    big.mar = ","
+  ),
+  caption = "Discriminiative ability (c-statistic) of the derived prediction models for acute myocardial infarction in the matched set (development set), the treatment cohort, the comparator cohort and the etnire population in CCAE, MDCD and MDCR"
+)
 ```
 
 Relative treatment effects of ACE-inhibitors vs beta blockers increased in favor
