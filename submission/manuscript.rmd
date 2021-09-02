@@ -260,8 +260,8 @@ patient enters a cohort; a set of inclusion criteria applied to the initial
 event cohort to further restrict the set of people, resulting in the
 construction of the construction of the qualifying cohort; cohort exit criteria
 that terminate the patient's presence in the cohort. Cohort definitions are
-transportable, meaning they can be implemented in any database, provided that it
-is mapped to the OMOP-CDM.***
+transportable, meaning that in theory they can be implemented in any database,
+provided that it is mapped to the OMOP-CDM.***
 
 < < ADD < <
 
@@ -323,6 +323,22 @@ decision tree, naive Bayes, K-nearest neighbors, neural network and deep
 learning (convolutional neural networks, recurrent neural network and deep
 nets).
 
+After model development, a performance overview of the derived prediction models
+including discrimination and calibration both in the propensity score matched
+subset, the entire population and separately for treated and comparator patients
+should also be reported. This is important to ensure that no overfitting of the
+prediction model in one of the cohorts has occurred. In addition, the
+performance of the prediction models is directly related to our ability to
+single out patient subgroups where treatment may be highly beneficial or unsafe.
+Kent et al [@Kent2016] demonstrated that the event rate and the discriminative
+ability of the prediction model can predict very well the distribution of
+predicted risk. Lower event rate and higher c-statistic (given good calibration)
+result in high risk heterogeneity, thus making estimated average treatment
+effects uninformative. In this case, risk stratified analysis of HTE can be more
+effective in singling out patient subgroups that stand to benefit (or be harmed)
+most by treatment in question.
+
+
 ## Step 4: Estimation
 
 The aim of this step is the estimation of treatment effects (both on the
@@ -337,29 +353,13 @@ within risk strata which we then use to match patients from different treatment
 cohorts or stratify them into groups with similar propensity scores or to weigh
 each patient's contribution to the estimation process [@Austin2011].
 
-## Step 5: Evaluation
+Before focusing on the results of the estimation process we need to evaluate if
+adequate covariate balance was achieved within each risk stratum accounting for
+measured confounding. Common approaches include evaluation of the overlap of
+propensity score distributions and calculation of standardized covariate
+differences before and after propensity score adjustment.
 
-In each risk stratum we need to evaluate if adequate covariate balance was
-achieved accounting for measured confounding. If that is not the case,
-interpretation of the results may be problematic. Common approaches include
-evaluation of the overlap of propensity score distributions and calculation of
-standardized covariate differences before and after propensity score adjustment.
-
-A performance overview of the derived prediction models, including
-discrimination and calibration both in the propensity score matched subset, the
-entire population and separately for treated and comparator patients should also
-be reported. This is quite relevant as the performance of the prediction models
-is directly related to our ability to single out patient subgroups where
-treatment may be highly beneficial or unsafe. Kent et al [@Kent2016]
-demonstrated that the event rate and the discriminative ability of the
-prediction model can predict very well the distribution of predicted risk. Lower
-event rate and higher c-statistic (given good calibration) result in high risk
-heterogeneity, thus making estimated average treatment effects uninformative. In
-this case, risk stratified analysis of HTE can be more effective in singling out
-patient subgroups that stand to benefit (or be harmed) most by treatment in
-question.
-
-## Step 6: Presentation of results
+## Step 5: Presentation of results
 
 In the presence of a positive treatment effect and a well-discriminating
 prediction model we expect an increasing pattern of the differences in the
