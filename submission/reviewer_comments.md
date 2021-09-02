@@ -132,6 +132,7 @@
     accommodate ATE by choosing stratification on the PS (currently)
     IPTW (under development) and ATT by choosing a matching scheme
     of the ones available in CohortMethod.
+  - When presenting database selection, also refer to CohortDiagnostics
 # Reviewer 3
 ## Points
   - HTE analysis has been used in the RCT setting and not in the
