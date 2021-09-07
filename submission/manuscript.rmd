@@ -276,8 +276,8 @@ provided that it is mapped to the OMOP-CDM.***
     initiation until the time of censoring.
   - One or more outcome cohorts ($O_1,\dots,O_n$) that contain patients
     developing the outcomes of interest. For example, the set of patients in a
-    database that have at least one occurrence of acute myocardial infarction in
-    their record.
+    database that have at least one occurrence of acute myocardial infarction
+    (MI) in their record.
 
 ## Step 2: Identification of the database
 
@@ -398,10 +398,10 @@ are:
     with at least one year of follow-up before treatment initiation and a
     recorded hypertension diagnosis within that year.
   - Outcome cohorts: We consider 3 main and 6 safety outcome cohorts. These are
-    patients in the database with a diagnosis of: acute myocardial infarction
-    (MI); hospitalization with heart failure; ischemic or hemorrhagic stroke
-    (efficacy outcomes); hypokalemia; hyperkalemia; hypotension; angioedema;
-    cough; abnormal weight gain (safety outcomes).
+    patients in the database with a diagnosis of: acute MI; hospitalization with
+    heart failure; ischemic or hemorrhagic stroke (efficacy outcomes);
+    hypokalemia; hyperkalemia; hypotension; angioedema; cough; abnormal weight
+    gain (safety outcomes).
 
 All cohort definitions were identical to the ones used in the multinational
 study carried out within OHDSI that provided overall treatment effect estimates
@@ -431,59 +431,12 @@ We used the following databases:
     employees, their spouses and dependents. Additionally, it captures
     laboratory tests for a subset of the covered lives.
 
-## Step 3: Prediction
+Our analyses included a total of 784,561, 66,820 and 101,661 patients initiating
+treatment with ACE inhibitors and 395,740, 45,999 and 69,798 patients initiating
+treatment with beta blockers in CCAE, MDCD and MDCD respectively (Table
+\@ref(tab:table)). Adequate numbers of patients were included in all strata of
+predicted acute MI risk.
 
-We developed separate prediction models for all efficacy outcomes (acute MI,
-hospitalization with heart failure and hemorrhagic or ischemic stroke) in each
-database. 
-
-\> > MOVE: ps_matching > >
-
-***More specifically, we first estimate propensity scores using LASSO
-logistic regression and a large set of baseline covariates including
-demographics, drug exposures, diagnoses, measurements and medical devices. We
-match patients 1-1 using a caliper, i.e. the maximum distance that is acceptable
-for any match. The default value we use is 0.2 on the standardized logit scale
-for the propensity scores.***
-
-< < MOVE < <
-
-The prediction models were estimated on the propensity score matched (1:1) subset of
-the population, using caliper of 0.2 and after excluding patients having the
-outcomes any time prior to treatment initiation. We chose a time horizon of 2
-years after inclusion into the target cohort. For this demonstration, we
-developed the prediction models using LASSO logistic regression with 3-fold
-cross validation for hyper-parameter selection. We chose a time horizon of 2
-years after inclusion into the target cohort. For this demonstration, we
-developed the prediction models using LASSO logistic regression with 3-fold
-cross validation for hyper-parameter selection.
-
-## Step 4: Estimation
-
-We used patient-level predictions to stratify the patient population into 4 risk
-quarters. Within risk strata, relative effects were estimated using Cox
-regression and absolute effects were estimated from the Kaplan-Meier estimate
-differences at 2 years after treatment initiation. To adjust for observed
-confounding within risk strata, we estimated propensity scores using the same
-approach as in the development of prediction models. We used the estimated
-propensity scores to stratify patients into 5 strata, within each risk quarter.
-
-## Step 5: Result presentation and evaluation
-
-We present the results of the analysis in the CCAE database with
-stratification based on risk predictions of acute MI. Results of analyses in the
-other databases and with other risk stratifications are included in the
-supplementary material.
-
-For each outcome and in each risk stratum there were adequate numbers of
-patients (Table \@ref(tab:table)). The discriminative ability of the prediction
-models was moderate in the matched development subset (c-index 0.76 for acute MI
-; 0.79 for hospitalization with heart failure; 0.74 for stroke; ), in the
-general population (c-index 0.74 for acute MI; 0.77 for hospitalization with
-heart failure; 0.73 for stroke), in the treatment cohort (c-index for acute MI
-it was 0.71, for hospitalization with heart failure was 0.76 and for stroke it
-was 0.72) and in the comparator cohort (c-index for acute MI it was 0.79 for
-hospitalization with heart failure was 0.79 and for stroke it was 0.75).
 \captionsetup{width=\textwidth}
 ```{r table, echo=FALSE, warning=FALSE, message=FALSE, results='asis', booktabs=TRUE}
 table <- readr::read_csv(
@@ -505,7 +458,7 @@ knitr::kable(
    format.args = list(
     big.mar = ","
   ),
-  caption = "Number of patients, person years and events within quarters of predicted risk for hospitalization with heart failure for the 3 main outcomes of the study (acute myocardial infarction, hospitalization with heart failure and ischemic or hemorrhagic stroke) across the 3 databases."
+  caption = "Number of patients, person years and events within quarters of predicted risk for acute MI for the 3 main outcomes of the study (acute MI, hospitalization with heart failure and ischemic or hemorrhagic stroke) across the 3 databases. The populations used for the evaluation of hosptialization with heart failure and stroke are subsets of the populations used for the evaluation of actute MI."
 ) %>%
   kableExtra::group_rows("CCAE", 1, 12) %>%
   kableExtra::group_rows("MDCD", 13, 24) %>%
@@ -519,6 +472,40 @@ knitr::kable(
   )
 ```
 
+## Step 3: Prediction
+
+We internally developed separate prediction models for acute MI in all 3
+databases.
+
+\> > MOVE: ps_matching > >
+
+***More specifically, we first estimate propensity scores using LASSO
+logistic regression and a large set of baseline covariates including
+demographics, drug exposures, diagnoses, measurements and medical devices. We
+match patients 1-1 using a caliper, i.e. the maximum distance that is acceptable
+for any match. The default value we use is 0.2 on the standardized logit scale
+for the propensity scores.***
+
+< < MOVE < <
+
+The prediction models were estimated on the propensity score matched (1:1)
+subset of the population, using caliper of 0.2 and after excluding patients
+having the outcomes any time prior to treatment initiation. We chose a time
+horizon of 2 years after inclusion into the target cohort. For this
+demonstration, we developed the prediction models using LASSO logistic
+regression with 3-fold cross validation for hyper-parameter selection. For this
+demonstration, we developed the prediction models using LASSO logistic
+regression with 3-fold cross validation for hyper-parameter selection.
+
+The models developed in the 3 databases had moderate discriminative performance
+(internally validated) with no major issues of overfitting to any cohort except
+for the case of CCAE database in which the derived prediction model performed
+better in the comparator cohort (Table \@ref(tab:tableAucs)). We also observed
+lower performance of the prediction model developed in MDCR compared to the
+other 2 databases. Results on the calibration of the prediction models can be
+found in the supplement.
+
+\captionsetup{width=\textwidth}
 ```{r tableAucs, echo=FALSE, results='asis', booktabs=TRUE}
 table <- tibble(
   population = c(
@@ -552,6 +539,35 @@ knitr::kable(
   caption = "Discriminiative ability (c-statistic) of the derived prediction models for acute myocardial infarction in the matched set (development set), the treatment cohort, the comparator cohort and the etnire population in CCAE, MDCD and MDCR"
 )
 ```
+
+
+## Step 4: Estimation
+
+We used patient-level predictions to stratify the patient population into 4 risk
+quarters. Within risk strata, relative effects were estimated using Cox
+regression and absolute effects were estimated from the Kaplan-Meier estimate
+differences at 2 years after treatment initiation. To adjust for observed
+confounding within risk strata, we estimated propensity scores using the same
+approach as in the development of prediction models. We used the estimated
+propensity scores to stratify patients into 5 strata, within each risk quarter.
+
+## Step 5: Result presentation and evaluation
+
+We present the results of the analysis in the CCAE database with
+stratification based on risk predictions of acute MI. Results of analyses in the
+other databases and with other risk stratifications are included in the
+supplementary material.
+
+For each outcome and in each risk stratum there were adequate numbers of
+patients (Table \@ref(tab:table)). The discriminative ability of the prediction
+models was moderate in the matched development subset (c-index 0.76 for acute MI
+; 0.79 for hospitalization with heart failure; 0.74 for stroke; ), in the
+general population (c-index 0.74 for acute MI; 0.77 for hospitalization with
+heart failure; 0.73 for stroke), in the treatment cohort (c-index for acute MI
+it was 0.71, for hospitalization with heart failure was 0.76 and for stroke it
+was 0.72) and in the comparator cohort (c-index for acute MI it was 0.79 for
+hospitalization with heart failure was 0.79 and for stroke it was 0.75).
+
 
 Relative treatment effects of ACE-inhibitors vs beta blockers increased in favor
 of ACE-inhibitors (hazard ratios decreased) with increasing acute MI risk,
