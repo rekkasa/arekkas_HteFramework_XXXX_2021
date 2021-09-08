@@ -550,6 +550,13 @@ differences at 2 years after treatment initiation. To adjust for observed
 confounding within risk strata, we estimated propensity scores using the same
 approach as in the development of prediction models. We used the estimated
 propensity scores to stratify patients into 5 strata, within each risk quarter.
+```{r figure8, echo=FALSE, fig.cap="Absolute risk reduction for the main and safety outcomes, estimated by fitting stratified Cox regression models within quarters of predicted risk of acute myocardial infarction (MI). The four risk quarters (Q1-Q4) are defined using the internally developed model for acute MI", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/PsDensity.tiff")))
+```
+
+```{r figure9, echo=FALSE, fig.cap="Absolute risk reduction for the main and safety outcomes, estimated by fitting stratified Cox regression models within quarters of predicted risk of acute myocardial infarction (MI). The four risk quarters (Q1-Q4) are defined using the internally developed model for acute MI", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/CovariateBalance.tiff")))
+```
 
 ## Step 5: Result presentation and evaluation
 
