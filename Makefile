@@ -22,6 +22,8 @@ data/processed/table1.csv : code/Table1.R
 
 submission/manuscript.pdf : submission/manuscript.rmd\
 	                    data/processed/table1.csv\
+			    figures/CombinedRelative.tiff\
+			    figures/CombinedAbsolute.tiff\
 			    figures/CovariateBalance.tiff\
 			    figures/PsDensity.tiff
 	R -e 'rmarkdown::render("submission/manuscript.rmd", output_format = "all")'

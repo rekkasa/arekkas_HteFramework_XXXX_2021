@@ -53,6 +53,9 @@ prepareDataset <- function(data) {
 relative <- prepareDataset(mappedOverallRelativeResults) %>%
   filter(
     stratOutcome == "Acute myocardial infarction"
+  ) %>%
+  mutate(
+    database = toupper(database)
   )
 
 relativePlot <- ggplot(
@@ -66,10 +69,12 @@ relativePlot <- ggplot(
   )
 ) +
   geom_point(
-    position = position_dodge(.5)
+    position = position_dodge(.5),
+    size     = 3.5
   ) +
   geom_errorbar(
     position = position_dodge(.5),
+    size = 1.1,
     width = 0
   ) +
   facet_grid(~riskStratum) +
@@ -85,9 +90,9 @@ relativePlot <- ggplot(
       "#8da0cb"
     ),
     breaks = c(
-      "mdcr",
-      "mdcd",
-      "ccae"
+      "MDCR",
+      "MDCD",
+      "CCAE"
     )
   ) +
   theme_bw() +
@@ -95,13 +100,14 @@ relativePlot <- ggplot(
     legend.position = "top",
     legend.title = element_blank(),
     axis.title.y = element_blank(),
-    axis.title.x = element_text(size = 20),
-    axis.text    = element_text(size = 15),
-    legend.text  = element_text(size = 15), 
+    axis.text.x  = element_text(size = 25),
+    axis.text.y  = element_text(size = 25),
+    axis.title   = element_text(size = 35),
+    legend.text  = element_text(size = 30), 
+    strip.text   = element_text(size = 25),
     strip.background = element_rect(
       fill = "#ffffff"
     ),
-    strip.text = element_text(size = 15)
   )
 
 ggsave(
@@ -109,7 +115,7 @@ ggsave(
   relativePlot, 
   compression = "lzw", 
   width       = 600, 
-  height      = 300,
+  height      = 350,
   units       = "mm",
   dpi         = 300
 )
@@ -120,6 +126,9 @@ absolute <- prepareDataset(mappedOverallAbsoluteResults) %>%
   filter(
     stratOutcome == "Acute myocardial infarction"
     # estOutcome != "Cough"
+  ) %>%
+  mutate(
+    database = toupper(database)
   )
 
 absolutePlot <- ggplot(
@@ -133,10 +142,12 @@ absolutePlot <- ggplot(
   )
 ) +
   geom_point(
-    position = position_dodge(.5)
+    position = position_dodge(.5),
+    size = 3.5
   ) +
   geom_errorbar(
     position = position_dodge(.5),
+    size = 1.1,
     width = 0
   ) +
   facet_grid(~riskStratum) +
@@ -152,9 +163,9 @@ absolutePlot <- ggplot(
       "#8da0cb"
     ),
     breaks = c(
-      "mdcr",
-      "mdcd",
-      "ccae"
+      "MDCR",
+      "MDCD",
+      "CCAE"
     )
   ) +
   theme_bw() +
@@ -162,13 +173,14 @@ absolutePlot <- ggplot(
     legend.position = "top",
     legend.title = element_blank(),
     axis.title.y = element_blank(),
-    axis.title.x = element_text(size = 20),
-    axis.text    = element_text(size = 15),
-    legend.text  = element_text(size = 15), 
+    axis.text.x  = element_text(size = 25),
+    axis.text.y  = element_text(size = 25),
+    axis.title   = element_text(size = 35),
+    legend.text  = element_text(size = 30), 
+    strip.text   = element_text(size = 25),
     strip.background = element_rect(
       fill = "#ffffff"
     ),
-    strip.text = element_text(size = 15)
   )
 
 ggsave(
@@ -176,7 +188,7 @@ ggsave(
   absolutePlot, 
   compression = "lzw", 
   width       = 600, 
-  height      = 300,
+  height      = 350,
   units       = "mm",
   dpi         = 300
 )

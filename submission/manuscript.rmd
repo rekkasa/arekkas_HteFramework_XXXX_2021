@@ -438,7 +438,7 @@ treatment with beta blockers in CCAE, MDCD and MDCD respectively (Table
 predicted acute MI risk.
 
 \captionsetup{width=\textwidth}
-```{r table, echo=FALSE, warning=FALSE, message=FALSE, results='asis', booktabs=TRUE}
+```{r table, cache=TRUE, echo=FALSE, warning=FALSE, message=FALSE, results='asis', booktabs=TRUE}
 table <- readr::read_csv(
   here::here("data/processed/table1.csv"),
   na = character()
@@ -506,7 +506,7 @@ other 2 databases. Results on the calibration of the prediction models can be
 found in the supplement.
 
 \captionsetup{width=\textwidth}
-```{r tableAucs, echo=FALSE, results='asis', booktabs=TRUE}
+```{r tableAucs, cache=TRUE, echo=FALSE, results='asis', booktabs=TRUE}
 table <- tibble(
   population = c(
     "Matched set",
@@ -550,58 +550,70 @@ differences at 2 years after treatment initiation. To adjust for observed
 confounding within risk strata, we estimated propensity scores using the same
 approach as in the development of prediction models. We used the estimated
 propensity scores to stratify patients into 5 strata, within each risk quarter.
-```{r figure8, echo=FALSE, fig.cap="Absolute risk reduction for the main and safety outcomes, estimated by fitting stratified Cox regression models within quarters of predicted risk of acute myocardial infarction (MI). The four risk quarters (Q1-Q4) are defined using the internally developed model for acute MI", out.width = '100%'}
+
+In general, there was sufficient overlap of propensity score distribution in all
+risk strata (Figure \@ref(fig:psDensity)). If empirical equipoise was not
+achieved, the validity of the comparative effectiveness estimates would be
+questionable.
+
+```{r psDensity, cache = TRUE, echo=FALSE, fig.cap="Preference score distributions for the evaluation of heterogeneity of the effect of ACE inhibitors compared to beta blockers on acute MI based on quarters of predicted acute MI risk. The preference score is a transformation of the propensity score that adjusts for prevalence differences between populations.", out.width = '100%'}
 grid::grid.raster(tiff::readTIFF(here("figures/PsDensity.tiff")))
 ```
 
-```{r figure9, echo=FALSE, fig.cap="Absolute risk reduction for the main and safety outcomes, estimated by fitting stratified Cox regression models within quarters of predicted risk of acute myocardial infarction (MI). The four risk quarters (Q1-Q4) are defined using the internally developed model for acute MI", out.width = '100%'}
+Propensity score adjustment achieved balance for most of the considered
+covariates, measured using standardized mean differences before and after
+adjustment (Figure \@ref(fig:covariateBalance)). However, in lower risk strata
+imbalances persisted for a substantial subset of the covariates, all related to
+pregnancy findings. This was anticipated (use of ACE inhibitors is specifically
+contraindicated during pregnancy) and was already pointed out in
+[@Suchard2019].
+
+```{r covariateBalance, cache = TRUE, echo=FALSE, fig.cap="Patient charactersistic balance for ACE inhibitors and beta blockers before and after stratification on the propensity scores. Each dot represents the standardized difference of means for a single covariate before (x-axis) and after (y-axis) stratification", out.width = '100%'}
 grid::grid.raster(tiff::readTIFF(here("figures/CovariateBalance.tiff")))
 ```
 
-## Step 5: Result presentation and evaluation
+## Step 5: Presentation of results
 
-We present the results of the analysis in the CCAE database with
-stratification based on risk predictions of acute MI. Results of analyses in the
-other databases and with other risk stratifications are included in the
-supplementary material.
+For hospitalization with acute MI there was an increasing trend in favor ACE
+inhibitors compared to beta blockers on the relative scale (hazard ratios
+decreased) with increasing acute MI risk. More specifically, hazard ratios
+decreased from 0.98 (0.77 to 1.26; 95% CI), 1.30 (0.51 to 3.22; 95% CI) and 1.03
+(0.82 to 1.29; 95% CI) to 0.76 (0.71 to 0.82; 95% CI), 0.94 (0.82 to 1.07; 95%
+CI) and 1.03 (0.93 to 1.15; 95% CI) in CCAE, MDCD and MDCR respectively (Figure
+\@ref(fig:combinedRelative)). In terms of hospitalization with heart failure
+relative treatment effect estimates favored ACE inhibitors across all risk
+strata in all databases. We found no differences between the two treatments in
+their effect on stroke on the relative scale. In terms of the safety outcomes we
+found an increased risk of cough and angioedema on the relative scale across all
+risk strata. In the case of cough, this effect decreased with increasing risk of
+acute MI---from 1.37 (1.33 to 1.41; 95% CI), 1.35 (1.24 to 1.48; 95% CI)
+and 1.37 (1.29 to 1.45; 95% CI) in the lowest acute MI risk quarter to 1.26
+(1.22 to 1.29; 95% CI), 1.07 (1.00 to 1.14) and 1.10 (1.04 to 1.17; 95% CI) in
+the highest acute MI risk quarter in CCAE, MDCD and MDCR respectively.
 
-For each outcome and in each risk stratum there were adequate numbers of
-patients (Table \@ref(tab:table)). The discriminative ability of the prediction
-models was moderate in the matched development subset (c-index 0.76 for acute MI
-; 0.79 for hospitalization with heart failure; 0.74 for stroke; ), in the
-general population (c-index 0.74 for acute MI; 0.77 for hospitalization with
-heart failure; 0.73 for stroke), in the treatment cohort (c-index for acute MI
-it was 0.71, for hospitalization with heart failure was 0.76 and for stroke it
-was 0.72) and in the comparator cohort (c-index for acute MI it was 0.79 for
-hospitalization with heart failure was 0.79 and for stroke it was 0.75).
-
-
-Relative treatment effects of ACE-inhibitors vs beta blockers increased in favor
-of ACE-inhibitors (hazard ratios decreased) with increasing acute MI risk,
-resulting in more pronounced absolute risk differences (ARD) with increasing
-acute MI risk (Figure \@ref(fig:figure2)).
-
-```{r figure2, echo=FALSE, fig.cap="Overview of heterogeneity of ACE-inhibitors treatment within strata of predicted risk of acute MI. The top panel contains the observed acute rates of ACE-inhibitors and beta blockers within each quarter of predicted acute MI risk. These are derived using the KaplanMeier estimates at 730 days after inclusion. The middle panel, contains the hazard ratios of comparing ACE-inhibitors to beta blockers with regard to acute MI. These are estimated using Cox proportional hazards regression within quarters of predicted acute MI risk. The bottom panel contains absolute risk reduction for ACE-inhibitors compared to beta blockers. These are derived as the difference in Kaplan-Meier estimates at 730 after inclusion. Hazard ratios in the middle panel show a decreasing trend with increasing acute MI risk. Given the rather good discrimination of the prediction model (AUC=0.74), this results in an increasing trend for absolute benefit in favor of ACE-inhibitors with increasing risk.", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/Figure_2.tif")))
+```{r combinedRelative, cache=TRUE, echo=FALSE, fig.cap="Overview of heterogeneity of ACE-inhibitors treatment on the relative scale (hazard ratios) within strata of predicted risk of acute MI. Values below 1 favor ACE inhibitors, while values above 1 favor beta blockers.", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/CombinedRelative.tiff")))
 ```
 
-In general, with increasing acute MI risk we observed an increasing pattern in
-terms of absolute benefit for the main outcomes, while the absolute harms did
-not increase for the safety outcomes. More specifically, patients in the low
-risk quarter did not receive absolute benefit (-0.03%) while absolute risk
-was 0.54% lower (95% confidence interval 0.36%—0.71%) for patients in the
-highest risk quarter. In contrast, the absolute and relative effects of
-ACE-inhibitors on safety outcomes (e.g. cough and angioedema) are slightly
-decreasing with increasing acute MI risk (Figure \@ref(fig:figure3) and
-\@ref(fig:figure4)). Similar results were observed in the other two databases
-(see supplementary material).
+We observed an increasing trend of treatment effect on the absolute scale with
+increasing acute MI risk in favor of ACE inhibitors in terms of acute MI in all
+databases except for MDCR---from -0.03% (-0.08% to 0.01%; 95% CI), -0.05%
+(-0.18% to 0.08%; 95% CI) and -0.02% (-0.24% to 0.19%; 95% CI) in the lowest
+acute MI risk quarter to 0.54% (0.36% to 0.71%; 95% CI), 0.29% (-0.39%
+to 0.97%; 95% CI) and -0.39% (-0.96% to 0.18%; 95% CI) in the highest acute MI
+risk quarter in CCAE, MDCD and MDCR, respectively (Figure \@ref(fig:figure12)).
+We found no difference on the absolute scale for stroke across risk strata.
+Absolute risk differences did not favor ACE inhibitors compared to beta blockers
+in terms of cough, even though this effect again diminished with increasing
+acute MI risk---from -4.14% (-4.62% to -3.66%; 95% CI), -6.45% (-9.12% to
+-3.78%; 95% CI) and -4.81% (-5.76% to -3.85%; 95% CI) in the lowest acute MI
+risk quarter to -2.57% (-2.99% to -2.15%; 95% CI), -1.11% (-2.93% to 0.70%; 95%
+CI) and -1.69% (-2.83% to -0.55%; 95% CI) in the highest acute MI risk quarter
+in CCAE, MDCD and MDCR, respectively. In terms of angioedema absolute risk
+differences were very small due to the rarity of the outcome.
 
-```{r figure3, echo=FALSE, fig.cap="Hazard ratios (relative treatment effects) for the main and safety outcomes, estimated by fitting stratified Cox regression models within quarters of predicted risk of acute myocardial infarction (MI). The four risk quarters (Q1-Q4) are defined using the internally developed model for acute MI", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/Figure_3.tif")))
-```
-
-```{r figure4, echo=FALSE, fig.cap="Absolute risk reduction for the main and safety outcomes, estimated by fitting stratified Cox regression models within quarters of predicted risk of acute myocardial infarction (MI). The four risk quarters (Q1-Q4) are defined using the internally developed model for acute MI", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/Figure_4.tif")))
+```{r figure12, cache=TRUE, echo=FALSE, fig.cap="Overview of heterogeneity of ACE-inhibitors treatment on the absolute scale within strata of predicted risk of acute MI. Estimates of absolute treatment effect are derived as the difference in Kaplan-Meier estimates at 730 after inclusion. Values above 0 favor ACE inhibitors, while values below 0 favor beta blockers.", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/CombinedAbsolute.tiff")))
 ```
 
 These results suggest that treatment with ACE-inhibitors, compared to treatment
@@ -610,8 +622,9 @@ benefits outweigh the harms, while beta blockers may be a viable option in lower
 risk patients, in whom the benefit-harm tradeoff is more favorable. This is in
 accordance with earlier findings that beta blockers should also be considered as
 first-line treatment for younger hypertensive patients [@Cruickshank2007;
-@Khan2006]. More thorough evaluation of these results is required in future
-research, however.
+@Khan2006]. This analysis, however, was carried out as demonstration of the
+framework and more rigorous analyses are required to make any suggestions for
+clinical practice.
 
 The results of the analyses performed can be accessed and assessed through a
 publicly available web application (https://data.ohdsi.org/AceBeta9Outcomes).
