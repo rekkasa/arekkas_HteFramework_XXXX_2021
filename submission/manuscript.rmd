@@ -209,9 +209,9 @@ OHDSI network, taking advantage of the OMOP-CDM.***
 
 \> > OLD > >
 
-We aimed to develop a framework for risk-based assessment of treatment effect heterogeneity
-in high-dimensional observational data, which extends the existing guidelines of
-the RCT setting. 
+We aimed to develop a framework for risk-based assessment of treatment effect
+heterogeneity in high-dimensional observational data, which extends the existing
+guidelines of the RCT setting. 
 
 < < OLD < <
 
