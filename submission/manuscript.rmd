@@ -247,7 +247,7 @@ grid::grid.raster(tiff::readTIFF(here("figures/Figure_1.tif")))
 
 The typical research aim is: "to compare the effect of treatment $T$ to a
 comparator treatment $C$ in patients with disease $D$ with respect to outcomes
-$O_1,\dots,O_n$". 
+$O_1,\dots,O_n$".
 
 \> > ADD > >
 
@@ -343,15 +343,27 @@ most by treatment in question.
 
 The aim of this step is the estimation of treatment effects (both on the
 relative and the absolute scale) within risk strata---typically 4 risk
-quarters---defined using the prediction model of step 3. Any appropriate method
-for the evaluation of relative and absolute treatment effects can be considered,
-as long as the this is done consistently in all risk strata. Common approaches
-are odds ratios or hazard ratios for relative scale estimates and differences in
-observed proportions or differences in Kaplan-Meier estimates for absolute scale
-estimates, depending on the problem at hand. We estimate propensity scores
-within risk strata which we then use to match patients from different treatment
-cohorts or stratify them into groups with similar propensity scores or to weigh
-each patient's contribution to the estimation process [@Austin2011].
+quarters---defined using the prediction model of step 3. 
+
+\> > ADD > >
+
+***Effect estimation may be focused on the difference in outcomes for a randomly
+selected person from the risk stratum (average treatment effect) or for a
+randomly selected person from the treatment cohort within the risk stratum
+receiving the treatment under study (average treatment effect on the
+treated).***
+
+< < ADD < <
+
+Any appropriate method for the evaluation of relative and absolute treatment
+effects can be considered, as long as the this is done consistently in all risk
+strata. Common approaches are odds ratios or hazard ratios for relative scale
+estimates and differences in observed proportions or differences in Kaplan-Meier
+estimates for absolute scale estimates, depending on the problem at hand. We
+estimate propensity scores within risk strata which we then use to match
+patients from different treatment cohorts or stratify them into groups with
+similar propensity scores or to weigh each patient's contribution to the
+estimation process [@Austin2011].
 
 Before focusing on the results of the estimation process we need to evaluate if
 adequate covariate balance was achieved within each risk stratum accounting for
@@ -543,6 +555,13 @@ knitr::kable(
 
 ## Step 4: Estimation
 
+\> > ADD > >
+
+***Our aim was to estimate the average treatment effects on the relative and the
+absolute scale within strata of predicted acute MI risk.***
+
+< < ADD < <
+
 We used patient-level predictions to stratify the patient population into 4 risk
 quarters. Within risk strata, relative effects were estimated using Cox
 regression and absolute effects were estimated from the Kaplan-Meier estimate
@@ -568,7 +587,7 @@ pregnancy findings. This was anticipated (use of ACE inhibitors is specifically
 contraindicated during pregnancy) and was already pointed out in
 [@Suchard2019].
 
-```{r covariateBalance, cache = TRUE, echo=FALSE, fig.cap="Patient charactersistic balance for ACE inhibitors and beta blockers before and after stratification on the propensity scores. Each dot represents the standardized difference of means for a single covariate before (x-axis) and after (y-axis) stratification", out.width = '100%'}
+```{r covariateBalance, cache = TRUE, echo=FALSE, fig.cap="Patient characteristic balance for ACE inhibitors and beta blockers before and after stratification on the propensity scores. Each dot represents the standardized difference of means for a single covariate before (x-axis) and after (y-axis) stratification", out.width = '100%'}
 grid::grid.raster(tiff::readTIFF(here("figures/CovariateBalance.tiff")))
 ```
 
