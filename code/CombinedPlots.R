@@ -128,7 +128,10 @@ absolute <- prepareDataset(mappedOverallAbsoluteResults) %>%
     # estOutcome != "Cough"
   ) %>%
   mutate(
-    database = toupper(database)
+    database = toupper(database),
+    estimate = 100 * estimate,
+    lower    = 100 * lower,
+    upper    = 100 * upper
   )
 
 absolutePlot <- ggplot(

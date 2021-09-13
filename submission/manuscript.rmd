@@ -26,7 +26,7 @@ bibliography: references.bib
 csl: jamia.csl
 ---
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(knitr)
 library(here)
@@ -107,7 +107,7 @@ risk; 5) evaluation and presentation of results. We demonstrate our framework by
 evaluating heterogeneity of the effect of angiotensin-converting enzyme (ACE)
 inhibitors versus beta blockers on a set of 9 outcomes of interest across three
 observational databases. With increasing risk of acute myocardial infarction we
-observed increasing absolute benefits, i.e. from -0.03% to 0.54% in the lowest
+observed increasing absolute benefits, i.e. from -0.05% to -0.02% in the lowest risk quarter to 
 to highest risk groups. Cough-related absolute harms decreased from 4.1%
 to 2.6%. The proposed framework may be useful for the evaluation of
 heterogeneity of treatment effect on observational data that are mapped to the
@@ -136,9 +136,7 @@ from low power and multiplicity issues [@Yusuf1991; @FernandezyGarcia2010].
 However, even with well-established constant relative effects, treatment benefit
 (or harm) may vary substantially on the absolute scale.
 
-\> > EDIT > >
-
-***In recent years, a large number of methods has been developed for the
+In recent years, a large number of methods has been developed for the
 assessment of HTE, mainly in the RCT setting. Earlier work suggested separating
 HTE analyses into exploratory, confirmatory, descriptive and predictive
 [@Varadhan2013]. Exploratory analyses focus on hypothesis generation,
@@ -153,24 +151,7 @@ patients are divided into risk strata using either an existing or an internally
 developed risk prediction model. Risk-stratum-specific estimates provide an
 overview of the evolution of treatment effects with increasing risk both on the
 relative and the absolute scale. Recently, systematic guidance on the
-application of such methods has been developed [@Kent2010; @Kent2018].***
-
-< < EDIT < <
-
-\> > OLD > >
-
-Predictive HTE analyses have been described as approaches that
-provide predictions of potential outcomes in a particular patient with one
-intervention versus an alternative, taking into account multiple relevant
-patient characteristics [@Varadhan2013]. We focus on “risk modeling”
-approaches where patients are divided into risk strata using either an existing
-or an internally developed risk prediction model. Risk-stratum-specific
-estimates provide an overview of the evolution of treatment effects with
-increasing risk both on the relative and the absolute scale. Recently,
-systematic guidance on the application of such methods has been developed
-[@Kent2010; @Kent2018].
-
-< < OLD < < 
+application of such methods has been developed [@Kent2010; @Kent2018].
 
 While these approaches were developed for application in randomized controlled
 trials (RCTs), observational databases are also an appealing substrate.
@@ -181,15 +162,9 @@ They are also often larger than many typical trials, providing excellent power
 for HTE analysis, including heterogeneous populations. However, unlike RCTs,
 treatment effects are subject to confounding, while the unique structure of
 different databases calls for database-specific analysis plans that often are
-not easily transportable.
-
-\> > ADD > >
-
-***Because of the latter issue, running analyses at scale demands a big investment
-of time and effort, as researchers are forced to map their analysis plans to the
-databases available to them.***
-
-< < ADD < <
+not easily transportable. Because of the latter issue, running analyses at scale
+demands a big investment of time and effort, as researchers are forced to map
+their analysis plans to the databases available to them.
 
 The Observational Health Data Sciences and Informatics (OHDSI) collaborative has
 established an international network of data partners and researchers that aim
@@ -197,31 +172,17 @@ to bring out the value of health data through large-scale analytics by mapping
 all available databases to the Observational Medical Outcomes Partnership (OMOP)
 Common Data Model (CDM) [@hripcsak2015observational; @Overhage2012]. 
 
-\> > EDIT > > 
-
-***We aimed to develop a framework for implementing risk-based assessment of
-treatment heterogeneity in high-dimensional observational data, extending the
-existing guidelines of the RCT setting. Our publicly available package provides
-an out-of-the-box solution for implementing such analyses at scale within the
-OHDSI network, taking advantage of the OMOP-CDM.***
-
-< < EDIT < <
-
-\> > OLD > >
-
-We aimed to develop a framework for risk-based assessment of treatment effect
-heterogeneity in high-dimensional observational data, which extends the existing
-guidelines of the RCT setting. 
-
-< < OLD < <
-
-We implemented the framework using existing OHDSI methods including the
-patient-level prediction framework and the population-level effect estimation
-framework based on new-user cohort design [@Reps2018; @Ryan2013]. As a
-proof-of-concept we analyzed heterogeneity of the effects of first-line
-hypertension treatment: we compared the effect of angiotensin converting enzyme
-(ACE) inhibitors to beta blockers on 9 outcomes across three different US claims
-databases.
+We aimed to develop a framework for implementing a risk-based predictive
+approach for evaluating HTE in high-dimensional observational data, extending
+the existing guidelines of the RCT setting. Our publicly available package
+provides an out-of-the-box solution for implementing such analyses at scale
+within the OHDSI network, taking advantage of the OMOP-CDM. We implemented the
+framework using existing OHDSI methods including the patient-level prediction
+framework and the population-level effect estimation framework based on new-user
+cohort design [@Reps2018; @Ryan2013]. As a proof-of-concept we analyzed
+heterogeneity of the effects of first-line hypertension treatment: we compared
+the effect of angiotensin converting enzyme (ACE) inhibitors to beta blockers
+on 9 outcomes across three different US claims databases.
 
 # Materials and Methods
 
@@ -232,16 +193,9 @@ research aim; 2) identification of the database within which the analyses will
 be performed; 3) a prediction step where internal or external prediction models
 are used to assign patient-level risk predictions; 4) an estimation step where
 absolute and relative treatment effects are estimated within risk strata; 5)
-presentation and evaluation of the results. We developed an open-source
-R-package for the implementation of the proposed framework and made it publicly
-available. The source code can be found at
-<https://github.com/OHDSI/RiskStratifiedEstimation>. An overview of the
-procedure can be seen in Figure \@ref(fig:figure1).
-
-```{r figure1, echo=FALSE, fig.cap="(A) Starting from a treatment (top), a comparator (bottom) and an outcome (middle) cohort we estimate the propensity scores on the entire target population. (B) We match patients on the propensity scores and estimate the prediction model. Since we match patients we develop the prediction model on smaller subset of the initial population and, therefore, the number of patients is smaller in B compared to A. (C) We apply the prediction model on the entire population (green: lower 25\\% of the risk distribution; yellow: patients with risk between 25\\% and 50\\% of the risk distribution; orange: patients with risk between 50\\% and 75\\% of the risk distribution; red: patients at risk higher than 75\\% of the risk distribution). (D) We separate in risk subgroups, here quarters. Within risk quarters propensity scores are estimated again and relative and absolute treatment effects are estimated.", out.width = '100%'}
-# knitr::include_graphics(here("figures/Figure_1.tif"))
-grid::grid.raster(tiff::readTIFF(here("figures/Figure_1.tif")))
-```
+presentation of the results. We developed an open-source R-package for the
+implementation of the proposed framework and made it publicly available. The
+source code can be found at <https://github.com/OHDSI/RiskStratifiedEstimation>.
 
 ## Step 1: General definition of the problem
 
@@ -249,9 +203,7 @@ The typical research aim is: "to compare the effect of treatment $T$ to a
 comparator treatment $C$ in patients with disease $D$ with respect to outcomes
 $O_1,\dots,O_n$".
 
-\> > ADD > >
-
-***Cohort definitions are crucial for this step of the framework. We define a
+Cohort definitions are crucial for this step of the framework. We define a
 cohort as the set of patients who satisfy one or more inclusion criteria for a
 duration of time. A cohort within the OHDSI setting is more than a set of
 specific clinical codes, providing a definition of a logic for how to use that
@@ -261,9 +213,10 @@ event cohort to further restrict the set of people, resulting in the
 construction of the construction of the qualifying cohort; cohort exit criteria
 that terminate the patient's presence in the cohort. Cohort definitions are
 transportable, meaning that in theory they can be implemented in any database,
-provided that it is mapped to the OMOP-CDM.***
+provided that it is mapped to the OMOP-CDM.
 
-< < ADD < <
+Our framework uses a comparative cohort design. This means that at least 3
+cohorts of patients need to be defined at this stage of the framework.
 
   - A single treatment cohort ($T$) which includes patients with disease $D$
     receiving the target treatment of interest. For example, a set of
@@ -285,8 +238,11 @@ The aim of this step is the inclusion of databases that represent the patient
 population of interest. It is required that the databases are mapped to the
 OMOP-CDM. The inclusion of multiple databases potentially increases the
 generalizability of results. Furthermore, the cohorts should preferably have
-adequate sample size to ensure precise effect estimation, even within smaller
-risk strata.
+adequate sample size with adequate follow-up time to ensure precise effect
+estimation, even within smaller risk strata. Other issues that may be of
+importance for database inclusion are the depth of data capture (the precision
+at which measurements, lab tests, conditions are recorded), the reliability of
+data entry and many more, also depending on the task at hand.
 
 ## Step 3: Prediction
 
@@ -306,14 +262,13 @@ model to patients across treatment arms, thus introducing spurious interactions
 with treatment [@Burke2014; @vanKlaveren2019], we develop the patient-level
 prediction model in the propensity score-matched (1:1) subset of the population.
 
-< < MOVE: ps_matching > >
-
-\> > ADD > >
-
-***Other methods of fitting the propensity scores, such as random forest and
-others (REF) can also be considered.***
-
-< < ADD < <
+More specifically, we first estimate propensity scores using LASSO logistic
+regression and a large set of baseline covariates including demographics, drug
+exposures, diagnoses, measurements and medical devices. We match patients 1-1
+using a caliper, i.e. the maximum distance that is acceptable for any match. The
+default value we use is 0.2 on the standardized logit scale for the propensity
+scores. Other methods of fitting the propensity scores, such as random forest
+and others can also be considered.
 
 Finally, we need to define the time horizon within which we aim to make
 predictions and we also need to select the machine-learning algorithm we want to
@@ -343,17 +298,11 @@ most by treatment in question.
 
 The aim of this step is the estimation of treatment effects (both on the
 relative and the absolute scale) within risk strata---typically 4 risk
-quarters---defined using the prediction model of step 3. 
-
-\> > ADD > >
-
-***Effect estimation may be focused on the difference in outcomes for a randomly
-selected person from the risk stratum (average treatment effect) or for a
-randomly selected person from the treatment cohort within the risk stratum
-receiving the treatment under study (average treatment effect on the
-treated).***
-
-< < ADD < <
+quarters---defined using the prediction model of step 3. Effect estimation may
+be focused on the difference in outcomes for a randomly selected person from the
+risk stratum (average treatment effect) or for a randomly selected person from
+the treatment cohort within the risk stratum receiving the treatment under study
+(average treatment effect on the treated).
 
 Any appropriate method for the evaluation of relative and absolute treatment
 effects can be considered, as long as the this is done consistently in all risk
@@ -370,6 +319,14 @@ adequate covariate balance was achieved within each risk stratum accounting for
 measured confounding. Common approaches include evaluation of the overlap of
 propensity score distributions and calculation of standardized covariate
 differences before and after propensity score adjustment.
+
+A schematic overview of the prediction and estimation steps is presented in
+Figure \@ref(fig:figure1).
+
+```{r figure1, echo=FALSE, fig.cap="(A) Starting from a treatment (top), a comparator (bottom) and an outcome (middle) cohort we estimate the propensity scores on the entire target population. (B) We match patients on the propensity scores and estimate the prediction model. Since we match patients we develop the prediction model on smaller subset of the initial population and, therefore, the number of patients is smaller in B compared to A. (C) We apply the prediction model on the entire population (green: lower 25\\% of the risk distribution; yellow: patients with risk between 25\\% and 50\\% of the risk distribution; orange: patients with risk between 50\\% and 75\\% of the risk distribution; red: patients at risk higher than 75\\% of the risk distribution). (D) We separate in risk subgroups, here quarters. Within risk quarters propensity scores are estimated again and relative and absolute treatment effects are estimated.", out.width = '100%'}
+# knitr::include_graphics(here("figures/Figure_1.tif"))
+grid::grid.raster(tiff::readTIFF(here("figures/Figure_1.tif")))
+```
 
 ## Step 5: Presentation of results
 
@@ -489,16 +446,6 @@ knitr::kable(
 We internally developed separate prediction models for acute MI in all 3
 databases.
 
-\> > MOVE: ps_matching > >
-
-***More specifically, we first estimate propensity scores using LASSO
-logistic regression and a large set of baseline covariates including
-demographics, drug exposures, diagnoses, measurements and medical devices. We
-match patients 1-1 using a caliper, i.e. the maximum distance that is acceptable
-for any match. The default value we use is 0.2 on the standardized logit scale
-for the propensity scores.***
-
-< < MOVE < <
 
 The prediction models were estimated on the propensity score matched (1:1)
 subset of the population, using caliper of 0.2 and after excluding patients
@@ -555,12 +502,8 @@ knitr::kable(
 
 ## Step 4: Estimation
 
-\> > ADD > >
-
-***Our aim was to estimate the average treatment effects on the relative and the
-absolute scale within strata of predicted acute MI risk.***
-
-< < ADD < <
+Our aim was to estimate the average treatment effects on the relative and the
+absolute scale within strata of predicted acute MI risk.
 
 We used patient-level predictions to stratify the patient population into 4 risk
 quarters. Within risk strata, relative effects were estimated using Cox
@@ -666,11 +609,13 @@ contain a large amount of information on treatment assignment and outcomes of
 interest, while also capturing key patient characteristics. Our framework
 provides a standardized approach that can be used to leverage available
 information from these data sources, allowing for large-scale risk-based
-assessment of treatment effect heterogeneity. Multiple outcomes can be evaluated
-in patient subgroups of similar baseline outcome risk. Multiple outcome risk
-stratification schemes can also be considered. However, this should be done with
-caution, as it may hinder the interpretability of the results, in a similar
-manner as typical subgroup analyses.
+assessment of treatment effect heterogeneity. It is an addition to the rapidly
+expanding literature of approaches for evaluating treatment effect
+heterogeneity. Multiple outcomes can be evaluated in patient subgroups of
+similar baseline outcome risk. Multiple outcome risk stratification schemes can
+also be considered. However, this should be done with caution, as it may hinder
+the interpretability of the results, in a similar manner as typical subgroup
+analyses.
 
 Recently, guidelines on the application of risk modeling approaches for the
 assessment of heterogeneity of treatment effect in RCT settings have been
@@ -710,38 +655,20 @@ risk would be more helpful, but is methodologically challenging. Future research
 is necessary for the development of methods for continuous risk-based assessment
 of HTE.
 
-
-\> > EDIT > >
-
-***Ideally, externally derived and adequately validated prediction model would
-be preferred for analyzing treatment effect heterogeneity [@Kent2010]. In the
+Ideally, externally derived and adequately validated prediction model would be
+preferred for analyzing treatment effect heterogeneity [@Kent2010]. In the
 absence of such prediction models an internally-developed risk prediction model
 can be considered. Earlier simulations of RCT studies have shown that internal
 models developed on the combined treatment and control arms blinded to treatment
 gave relatively unbiased estimates of treatment effect across the spectrum of
-risk [@Burke2014].***
-
-< < EDIT < <
-
-\> > OLD > >
-
-Externally derived and well transportable prediction models are preferred for
-analyzing treatment effect heterogeneity [@Kent2010]. In the absence of such
-prediction models, simulations of RCTs have shown that internal models can be
-used to provide unbiased estimates of treatment effect across the spectrum of
-baseline risk [@Burke2014].
-
-< < OLD < <
-
-However, in observational databases treatment arms
-may significantly differ in sample size. Because the prediction model will
-possibly better fit to the larger treatment arm, spurious treatment-covariate
+risk [@Burke2014]. However, in observational databases treatment arms may
+significantly differ in sample size. Because the prediction model will possibly
+better fit to the larger treatment arm, spurious treatment-covariate
 interactions may be introduced in the prediction model, leading to sub-optimal
 risk stratification. As a remedy, we first match the patients in the treatment
 and the comparator cohorts on the basis of propensity scores. Additionally, we
 propose to assess model performance in the separate treatment arms to evaluate
 its aptness for risk stratification.
-
 
 Recently, disease risk scores have been explored as an alternative to propensity
 scores for balancing covariates [@Glynn2012; @Hansen2008]. In our method, the
