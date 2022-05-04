@@ -34,16 +34,21 @@ library(kableExtra)
 d <- function(x, decimals = 2) {
   sprintf(paste0("%1.", decimals, "f"), x) 
 }
-knit_hooks$set(
-  inline = function(x) {
-    prettyNum(
-      x,
-      big.mark = ",",
-      decimal.mark = ".",
-      preserve.width = "individual"
-    )
+inline_hook <- function(x) {
+  if (is.numeric(x)) {
+    if (abs(x - round(x)) < .Machine$double.eps) {
+      formatted <- format(x, digits = 1, big.mark = ",")
+    } else {
+      formatted <- format(x, digits = 1 ,nsmall = 2, big.mark = ",")
+    }
+  } else {
+    formatted <- x
   }
-)
+  
+  return(formatted)
+}
+
+knit_hooks$set(inline = inline_hook)
 ```
 \thispagestyle{empty}
 \vspace{8mm}
@@ -106,7 +111,7 @@ of predicted risk, after adjusting for observed confounding; 5) presentation of
 the results. We demonstrate our framework by evaluating heterogeneity of the
 effect of angiotensin-converting enzyme (ACE) inhibitors versus beta blockers on
 3 efficacy and 6 safety outcomes across three observational databases. Patients
-at low risk of acute myocardial infarction (MI) received negligible absolute
+    at low risk of acute myocardial infarction (MI) received negligible absolute
 benefits for all 3 efficacy outcomes, though they were more pronounced in the
 highest risk quarter, especially for hospitalization with heart failure. The
 substantial risk increase of cough and angioedema with ACE inhibitors across all
@@ -124,211 +129,144 @@ and effectiveness questions across the global data network.
 
 # Introduction
 
-Understanding how a treatment’s effect varies across patients---a concept
-described as heterogeneity of treatment effects (HTE)---has been central to the
-agenda for both personalized (or precision) medicine and comparative
-effectiveness research. More formally, HTE has been defined as the non-random
-variability in the direction or magnitude of a treatment effect, in which the
-effect is measured using clinical outcomes [@KRAVITZ2004]. Usually, analyses
-focus on the relative scale, where treatment effects are assessed one at a time
-in patient subgroups defined from single covariates, an approach that suffers
-from low power and multiplicity issues [@Yusuf1991; @FernandezyGarcia2010].
-However, even with well-established constant relative effects, treatment benefit
-(or harm) may vary substantially on the absolute scale.
+The Observational Health Data Science and Informatics (OHDSI) collaborative has
+established a global network of data partners and researchers that aim to bring
+out the value of health data through large-scale analytics by mapping local
+databases to the Observational Medical Outcomes Partnership (OMOP) Common Data
+Model (CDM) [@hripcsak2015observational;@Overhage2012]. A standardized framework
+applying current best practices for comparative effectiveness studies within the
+OHDSI setting has been proposed [@Ryan2013]. This framework was implemented on a
+large scale for estimation of average effects of all first-line hypertension
+treatment classes on a total of 52 outcomes of interest across a global network
+of 9 observational databases [@Suchard2019].
 
-In recent years, a large number of methods has been developed for the
-assessment of HTE, mainly in the RCT setting. Earlier work suggested separating
-HTE analyses into exploratory, confirmatory, descriptive and predictive
-[@Varadhan2013]. Exploratory analyses focus on hypothesis generation,
-confirmatory analyses test subgroup effect hypotheses, descriptive analyses aim
-at facilitating future synthesis of subgroup effects and predictive analyses
-predict probabilities of benefit or harm in individual patients. Predictive HTE
-approaches can be further subdivided into risk modeling, treatment effect
-modeling and optimal treatment regime methods, based on the reference class used
-for defining patient similarity when making individualized predictions or
-recommendations [@Rekkas2020]. We focus on “risk modeling” approaches where
-patients are divided into risk strata using either an existing or an internally
-developed risk prediction model. Risk-stratum-specific estimates provide an
-overview of the evolution of treatment effects with increasing risk both on the
-relative and the absolute scale. Recently, systematic guidance on the
-application of such methods has been developed [@Kent2010; @Kent2018].
+Treatment effects can often vary substantially across individual patients,
+causing overall effect estimates to be inaccurate for a significant proportion
+of the patients at hand [@Rothwell1995;@KRAVITZ2004]. Understanding
+heterogeneity of treatment effects (HTE) has been central to the agenda for both
+personalized (or precision) medicine and comparative effectiveness research,
+giving rise to a wide range of approaches for its discovery, evaluation and
+application in clinical practice. While exploratory and confirmatory HTE
+analyses focus on generating and testing hypotheses on subgroup effects,
+predictive HTE analyses use all available patient data to predict the benefits
+or harms of treatment in individual patients [@Varadhan2013;@Kent2018].
 
-While these approaches were developed for application in randomized controlled
-trials (RCTs), observational databases are also an appealing substrate.
-Observational healthcare databases, such as administrative claims and electronic
-health records, are already highly available for the analysis of
-pharmacoepidemiologic research questions [@AdlerMilstein2017; @Dahabreh2014].
-They are also often larger than many typical trials, providing excellent power
-for HTE analysis, including heterogeneous populations. However, unlike RCTs,
-treatment effects are subject to confounding, while the unique structure of
-different databases calls for database-specific analysis plans that often are
-not easily transportable. Because of the latter issue, running analyses at scale
-demands a big investment of time and effort, as researchers are forced to map
-their analysis plans to the databases available to them.
+Baseline risk has been recognized as a robust predictor of treatment effect,
+because of the inherent relationship between baseline risk and the absolute
+effects of treatment
+[@Rothwell2005;@Hayward2006;@Kent2007;@Kent2008;@Kent2010]. For example, an
+invasive coronary procedure – in comparison with medical treatment – improves
+survival in patients with myocardial infarction at high (predicted) baseline
+risk but not in those at low baseline risk [@Thune2005]. It has also been shown
+that high-risk patients with pre-diabetes benefit substantially more from a
+lifestyle modification program than low-risk patients [@Sussman2015].
 
-The Observational Health Data Sciences and Informatics (OHDSI) collaborative has
-established an international network of data partners and researchers that aim
-to bring out the value of health data through large-scale analytics by mapping
-all available databases to the Observational Medical Outcomes Partnership (OMOP)
-Common Data Model (CDM) [@hripcsak2015observational; @Overhage2012]. 
+Recently, systematic guidance on the application of risk-based methods has been
+developed for RCT data [@Kent2019;@PathEnE]. Patients are divided into risk strata using
+either an existing or an internally developed risk prediction
+model. Risk-stratum-specific estimates provide an overview of the evolution of
+treatment effects with increasing risk both on the relative and the absolute
+scale. Several methods for predictive HTE analysis have been adapted for use in
+observational data, but risk-based methods for predictive HTE in observational
+data are still lacking and have been highlighted as an important future research
+need [@PathEnE].
 
-We aimed to develop a framework for implementing a risk-based predictive
-approach for evaluating HTE in high-dimensional observational data, extending
-the existing guidelines of the RCT setting. Our publicly available package
-provides an out-of-the-box solution for implementing such analyses at scale
-within the OHDSI network, taking advantage of the OMOP-CDM. We implemented the
-framework using existing OHDSI methods including the patient-level prediction
-framework and the population-level effect estimation framework based on new-user
-cohort design [@Reps2018; @Ryan2013]. As a proof-of-concept we analyzed
-heterogeneity of the effects of first-line hypertension treatment: we compared
-the effect of angiotensin converting enzyme (ACE) inhibitors to beta blockers
-on 9 outcomes across three different US claims databases.
+We aimed to develop a framework for risk-based assessment of treatment effect
+heterogeneity in observational healthcare databases, extending the existing
+methodology developed for the RCT setting. We implemented the framework in a
+publicly available package providing an out-of-the-box solution for implementing
+such analyses at scale within any observational database mapped to OMOP-CDM. In
+a case study we analyzed heterogeneity of the effects of first-line hypertension
+treatment: we compared the effect of angiotensin converting enzyme (ACE)
+inhibitors to beta blockers on 9 outcomes across three different US claims
+databases.
 
-# Materials and Methods
+# Methods
 
 The proposed framework defines 5 distinct steps that enable a standardized
 approach for risk-based assessment of treatment effect heterogeneity for
 databases mapped to the OMOP-CDM. These are: 1) general definition of the
-research aim; 2) identification of the database within which the analyses will
+research aim; 2) identification of the databases within which the analyses will
 be performed; 3) a prediction step where internal or external prediction models
 are used to assign patient-level risk predictions; 4) an estimation step where
 absolute and relative treatment effects are estimated within risk strata; 5)
 presentation of the results. We developed an open-source R-package for the
 implementation of the proposed framework and made it publicly available. The
-source code can be found at <https://github.com/OHDSI/RiskStratifiedEstimation>.
+source code can be found at https://github.com/OHDSI/RiskStratifiedEstimation.
 
-## Step 1: General definition of the problem
+## Step 1: General definition of the research aim
 
-The typical research aim is: "to compare the effect of treatment $T$ to a
-comparator treatment $C$ in patients with disease $D$ with respect to outcomes
-$O_1,\dots,O_n$".
-
-Cohort definitions are crucial for this step of the framework. We define a
-cohort as the set of patients who satisfy one or more inclusion criteria for a
-duration of time. A cohort within the OHDSI setting is more than a set of
-specific clinical codes, providing a definition of a logic for how to use that
-code set. All cohort definitions consist of: an entry event, i.e. the time a
-patient enters a cohort; a set of inclusion criteria applied to the initial
-event cohort to further restrict the set of people, resulting in the
-construction of the construction of the qualifying cohort; cohort exit criteria
-that terminate the patient's presence in the cohort. Cohort definitions are
-transportable, meaning that in theory they can be implemented in any database,
-provided that it is mapped to the OMOP-CDM.
+The typical research aim is: “to compare the effect of treatment to a comparator
+treatment in patients with disease with respect to outcomes $O_1,\dots,O_n$”.
 
 Our framework uses a comparative cohort design. This means that at least 3
-cohorts of patients need to be defined at this stage of the framework.
+cohorts of patients need to be defined at this stage of the framework:
 
-  - A single treatment cohort ($T$) which includes patients with disease $D$
-    receiving the target treatment of interest. For example, a set of
-    hypertension patients within a database that receive angiotensin-converting
-    enzyme inhibitors, followed from the time of initiation until the time of
-    censoring.
-  - A single comparator cohort ($C$) which includes patients with disease $D$
-    receiving the comparator (control) treatment. For example, a set of patients
-    in a database that receive beta blockers, followed from the time of
-    initiation until the time of censoring.
-  - One or more outcome cohorts ($O_1,\dots,O_n$) that contain patients
-    developing the outcomes of interest. For example, the set of patients in a
-    database that have at least one occurrence of acute myocardial infarction
-    (MI) in their record.
+- A single treatment cohort ($T$) which includes patients with disease receiving
+  the target treatment of interest.
+- A single comparator cohort ($C$) which includes patients with disease receiving
+  the comparator treatment.
+- One or more outcome cohorts ($O_1,\dots,O_n$) that contain patients
+  developing the outcomes of interest
+  
+## Step 2: Identification of the databases {#methods2}
 
-## Step 2: Identification of the database
+Including in our analyses multiple databases representing the population of
+interest potentially increases the generalizability of results. Furthermore, the
+cohorts should preferably have adequate sample size with adequate follow-up time
+to ensure precise effect estimation, even within smaller risk strata. Other
+issues that may be of importance for database inclusion are the depth of data
+capture (the precision at which measurements, lab tests, conditions are
+recorded) and the reliability of data entry.
 
-The aim of this step is the inclusion of databases that represent the patient
-population of interest. It is required that the databases are mapped to the
-OMOP-CDM. The inclusion of multiple databases potentially increases the
-generalizability of results. Furthermore, the cohorts should preferably have
-adequate sample size with adequate follow-up time to ensure precise effect
-estimation, even within smaller risk strata. Other issues that may be of
-importance for database inclusion are the depth of data capture (the precision
-at which measurements, lab tests, conditions are recorded), the reliability of
-data entry and many more, also depending on the task at hand.
-
-## Step 3: Prediction
+## Step 3: Prediction {#methods3}
 
 We adopt the standardized framework for the generation of patient-level
 prediction models using observational data that ensures adherence to existing
-guidelines [@Collins2015; @Moons2015]. This prediction framework requires the
-definition of two essential cohorts: a target cohort, i.e. a set of patients
-that satisfy one or more inclusion criteria for a duration of time, and an
-outcome cohort.
-
-To generate the target cohort we pool the already defined treatment cohort and
-comparator cohort. Further restrictions can be applied on the target cohort to
-construct the final population on which the prediction model will be developed
-(e.g. exclude patients with a prior outcome in their history, before being
-included in the target cohort). To avoid deferentially fitting the prediction
-model to patients across treatment arms, thus introducing spurious interactions
-with treatment [@Burke2014; @vanKlaveren2019], we develop the patient-level
-prediction model in the propensity score-matched (1:1) subset of the population.
-
-More specifically, we first estimate propensity scores using LASSO logistic
-regression and a large set of baseline covariates including demographics, drug
-exposures, diagnoses, measurements and medical devices. We match patients 1-1
-using a caliper, i.e. the maximum distance that is acceptable for any match. The
-default value we use is 0.2 on the standardized logit scale for the propensity
-scores. Other methods of fitting the propensity scores, such as random forest
-and others can also be considered.
-
-Finally, we need to define the time horizon within which we aim to make
-predictions and we also need to select the machine-learning algorithm we want to
-use to generate patient-level predictions. Currently, the available options are
-regularized logistic regression, random forest, gradient boosting machines,
-decision tree, naive Bayes, K-nearest neighbors, neural network and deep
-learning (convolutional neural networks, recurrent neural network and deep
-nets).
+guidelines [@Collins2015;@Moons2015]. To generate the target cohort (i.e. the
+set of patients on which the prediction model will be developed), we pool the
+already defined treatment cohort and comparator cohort. To avoid deferentially
+fitting the prediction model to patients across treatment arms, thus introducing
+spurious interactions with treatment [@Burke2014;@vanKlaveren2019], we develop
+the patient-level prediction model in the propensity score-matched (1:1) subset
+of the sample. Finally, we need to define the time horizon within which we aim
+to make predictions and we also need to select the machine-learning algorithm we
+want to use to generate patient-level predictions.
 
 After model development, a performance overview of the derived prediction models
 including discrimination and calibration both in the propensity score matched
-subset, the entire population and separately for treated and comparator patients
-should also be reported. This is important to ensure that no overfitting of the
-prediction model in one of the cohorts has occurred. In addition, the
-performance of the prediction models is directly related to our ability to
-single out patient subgroups where treatment may be highly beneficial or unsafe.
-Kent et al [@Kent2016] demonstrated that the event rate and the discriminative
-ability of the prediction model can predict very well the distribution of
-predicted risk. Lower event rate and higher c-statistic (given good calibration)
-result in high risk heterogeneity, thus making estimated average treatment
-effects uninformative. In this case, risk stratified analysis of HTE can be more
-effective in singling out patient subgroups that stand to benefit (or be harmed)
-most by treatment in question.
+subset, the entire sample and separately for treated and comparator patients
+should also be reported.
 
+## Step 4: Estimation {#methods4}
 
-## Step 4: Estimation
+We estimate treatment effects (both on the relative and the absolute scale)
+within risk strata—typically 4 risk quarters—defined using the prediction model
+of step 3. Effect estimation may be focused on the difference in outcomes for a
+randomly selected person from the risk stratum (average treatment effect) or for
+a randomly selected person from the treatment cohort within the risk stratum
+receiving the treatment under study (average treatment effect on the treated).
 
-The aim of this step is the estimation of treatment effects (both on the
-relative and the absolute scale) within risk strata---typically 4 risk
-quarters---defined using the prediction model of step 3. Effect estimation may
-be focused on the difference in outcomes for a randomly selected person from the
-risk stratum (average treatment effect) or for a randomly selected person from
-the treatment cohort within the risk stratum receiving the treatment under study
-(average treatment effect on the treated).
-
-Any appropriate method for the evaluation of relative and absolute treatment
+Any appropriate method for the analysis of relative and absolute treatment
 effects can be considered, as long as the this is done consistently in all risk
-strata. Common approaches are odds ratios or hazard ratios for relative scale
-estimates and differences in observed proportions or differences in Kaplan-Meier
-estimates for absolute scale estimates, depending on the problem at hand. We
-estimate propensity scores within risk strata which we then use to match
-patients from different treatment cohorts or stratify them into groups with
-similar propensity scores or to weigh each patient's contribution to the
+strata. Common statistical metrics are odds ratios or hazard ratios for relative
+scale estimates and differences in observed proportions or differences in
+Kaplan-Meier estimates for absolute scale estimates, depending on the problem at
+hand. We estimate propensity scores within risk strata which we then use to
+match patients from different treatment cohorts or to stratify them into groups
+with similar propensity scores or to weigh each patient’s contribution to the
 estimation process [@Austin2011].
 
-Before focusing on the results of the estimation process we need to evaluate if
-adequate covariate balance was achieved within each risk stratum accounting for
-measured confounding. Common approaches include evaluation of the overlap of
-propensity score distributions and calculation of standardized covariate
-differences before and after propensity score adjustment.
+Prior to analyzing the results, we need to assess if adequate covariate balance
+was achieved within each risk stratum accounting for measured
+confounding. Common approaches include analysis of the overlap of propensity
+score distributions and calculation of standardized mean differences of the
+covariates before and after propensity score adjustment.
 
 A schematic overview of the prediction and estimation steps is presented in
-Figure \@ref(fig:figure1).
+Figure XX.
 
-```{r figure1, echo=FALSE, fig.cap="(A) Starting from a treatment (top), a comparator (bottom) and an outcome (middle) cohort we estimate the propensity scores on the entire target population. (B) We match patients on the propensity scores and estimate the prediction model. Since we match patients we develop the prediction model on smaller subset of the initial population and, therefore, the number of patients is smaller in B compared to A. (C) We apply the prediction model on the entire population (green: lower 25\\% of the risk distribution; yellow: patients with risk between 25\\% and 50\\% of the risk distribution; orange: patients with risk between 50\\% and 75\\% of the risk distribution; red: patients at risk higher than 75\\% of the risk distribution). (D) We separate in risk subgroups, here quarters. Within risk quarters propensity scores are estimated again and relative and absolute treatment effects are estimated.", out.width = '100%'}
-# knitr::include_graphics(here("figures/Figure_1.tif"))
-grid::grid.raster(tiff::readTIFF(here("figures/Figure_1.tif")))
-```
-
-## Step 5: Presentation of results
+## Step 5: Presentation of results {#methods5}
 
 In the presence of a positive treatment effect and a well-discriminating
 prediction model we expect an increasing pattern of the differences in the
@@ -338,356 +276,383 @@ heterogeneity, results should be assessed both on the relative and the absolute
 scale. We find that a side-by-side presentation on a forest-like format can give
 a very good representation of our results.
 
+## Case study
+
+As a demonstration of our framework, we evaluated if our proposed method was
+able to identify treatment effect heterogeneity of ACE inhibitors compared to
+beta blockers using acute myocardial infarction (MI) risk quarter specific
+effect estimates, both on the relative and on the absolute scale. We focused on
+3 efficacy outcomes (acute MI, hospitalization with heart failure and ischemic
+or hemorrhagic stroke) and 6 safety outcomes (hypokalemia, hyperkalemia,
+hypotension, angioedema, cough and abnormal weight gain). We used data from 3
+US-based claims databases. The analysis plan was the framework outlined in
+steps 1 through 5.
+
+A recent meta-analysis has shown that beta-blockers are on average less
+efficacious in preventing cardiovascular events than ACE inhibitors
+[@Wiysonge2017]. However, meta-analyses focusing on age of the patients have
+shown that beta blockers have similar efficacy in younger hypertensive patients,
+but should not be used as first-line treatment of hypertension in older patients
+mainly due to their increased risk of cardiovascular events compared to other
+first-line antihypertensive treatments [@Khan2006;@Vgele2017].Our aim was to
+replicate these conclusions in our analyses.
+
 # Results
 
-As a proof of concept, we focus on the comparison of angiotensin converting
-enzyme (ACE) inhibitors to beta blockers are among the most common treatment
-classes for hypertension, with well-established effectiveness. Beta blockers,
-even though initially widely used for the treatment of hypertension, more recent
-trials and meta-analyses have cast doubt on their relative effectiveness
-[@wiysonge2017beta]. As a result, newer US guidelines do not consider beta
-blockers for initial treatment for hypertension while in the EU guidelines
-combination with other antihypertensive treatments is recommended
-[@Whelton2018; @Williams2018]. However, another meta-analysis suggested that
-the efficacy profile of beta blockers is similar to other major treatment
-classes in younger hypertensive patients and, thus, countries like Canada still
-include them as a first-line treatment candidate [@Khan2006; @Rabi2020].
+## Step 1: General definition of the research aim
 
-## Step 1: General definition of the problem
+We considered the following research aim: “compare the effect of ACE-inhibitors
+($T$) to the effect of beta blockers ($C$) in patients with established hypertension
+with respect to 9 outcomes ($O_1,\dots,O_9$)”. The cohorts are:
 
-We consider the following research aim: "compare the effect of ACE-inhibitors
-($T$) to the effect of beta blockers ($C$) in patients with established
-hypertension ($D$) with respect to 9 outcomes ($O_1,\dots,O_9$)". The cohorts
-are:
-
-  - Treatment cohort: Patients receiving any drug within the ACE-inhibitor class
-    with at least one year of follow-up before treatment initiation and a
-    recorded hypertension diagnosis within that year.
-  - Comparator cohort: Patients receiving any drug within the beta blocker class
-    with at least one year of follow-up before treatment initiation and a
-    recorded hypertension diagnosis within that year.
-  - Outcome cohorts: We consider 3 main and 6 safety outcome cohorts. These are
-    patients in the database with a diagnosis of: acute MI; hospitalization with
-    heart failure; ischemic or hemorrhagic stroke (efficacy outcomes);
-    hypokalemia; hyperkalemia; hypotension; angioedema; cough; abnormal weight
-    gain (safety outcomes).
+- Treatment cohort: Patients receiving any drug within the ACE-inhibitor class
+  with at least one year of follow-up before treatment initiation and a recorded
+  hypertension diagnosis within that year.
+- Comparator cohort: Patients receiving any drug within the beta blocker class
+  with at least one year of follow-up before treatment initiation and a recorded
+  hypertension diagnosis within that year.
+- Outcome cohorts: We considered 3 efficacy and 6 safety outcome cohorts. These
+  were patients in the database with a diagnosis of: acute MI; hospitalization
+  with heart failure; ischemic or hemorrhagic stroke (efficacy outcomes);
+  hypokalemia; hyperkalemia; hypotension; angioedema; cough; abnormal weight
+  gain (safety outcomes).
 
 All cohort definitions were identical to the ones used in the multinational
-study carried out within OHDSI that provided overall treatment effect estimates
-comparing all anti-hypertensive drug classes with each other [@Suchard2019].
-More information can be found in the supplementary material.
+study that provided overall treatment effect estimates comparing all
+anti-hypertensive drug classes with each other [@Suchard2019]. More information
+can be found in the supplementary material.
 
 ## Step 2: Identification of the databases
 
-We used the following databases:
-
-  - IBM MarketScan Medicare Supplemental Beneficiaries (MDCR): Represents health
-    services of retirees (aged 65 or older) in the United States with primary or
-    Medicare supplemental coverage through privately insured fee-for-service,
-    point-of-service or capitated health plans. These data include adjudicated
-    health insurance claims (e.g. inpatient, outpatient and outpatient
-    pharmacy). Additionally, it captures laboratory tests for a subset of the
-    covered lives.
-  - IBM MarketScan Medicaid (MDCD): Adjudicated US health insurance claims for
-    Medicaid enrollees from multiple states. It includes hospital discharge
-    diagnoses, outpatient diagnoses and procedures and outpatient pharmacy
-    claims as well as ethnicity and Medicare eligibility.
-  - IBM MarketScan Commercial Claims and Encounters (CCAE): Data from
-    individuals enrolled in US employer-sponsored insurance health plans. The
-    data includes adjudicated health insurance claims (e.g. inpatient,
-    outpatient, and outpatient pharmacy) as well as enrollment data from large
-    employers and health plans who provide private healthcare coverage to
-    employees, their spouses and dependents. Additionally, it captures
-    laboratory tests for a subset of the covered lives.
-
-Our analyses included a total of 784,561, 66,820 and 101,661 patients initiating
-treatment with ACE inhibitors and 395,740, 45,999 and 69,798 patients initiating
-treatment with beta blockers in CCAE, MDCD and MDCD respectively (Table
-\@ref(tab:table)). Adequate numbers of patients were included in all strata of
-predicted acute MI risk.
-
-\captionsetup{width=\textwidth}
-```{r table, cache=TRUE, echo=FALSE, warning=FALSE, message=FALSE, results='asis', booktabs=TRUE}
-table <- readr::read_csv(
-  here::here("data/processed/table1.csv"),
-  na = character()
-) %>%
-  select(-database)
-
-knitr::kable(
-  table,
-  format = "latex",
-  longtable = TRUE,
-  booktabs = TRUE,
-  col.names = c(
-    "Outcome", "Risk quarter",
-    "Persons", "Person years", "Events",
-    "Persons", "Person years", "Events"
-  ),
-   format.args = list(
-    big.mar = ","
-  ),
-  caption = "Number of patients, person years and events within quarters of predicted risk for acute MI for the 3 main outcomes of the study (acute MI, hospitalization with heart failure and ischemic or hemorrhagic stroke) across the 3 databases. The populations used for the evaluation of hosptialization with heart failure and stroke are subsets of the populations used for the evaluation of actute MI."
-) %>%
-  kableExtra::group_rows("CCAE", 1, 12) %>%
-  kableExtra::group_rows("MDCD", 13, 24) %>%
-  kableExtra::group_rows("MDCR", 25, 36) %>%
-  kableExtra::add_header_above(
-    c(
-      "", "", 
-      "ACE inhibitors" = 3,
-      "Beta blockers"  = 3
-    )
-  )
-```
+For our analyses we used data from 3 US claims databases, namely IBM MarketScan
+Commercial Claims and Encounters (CCAE), IBM MarketScan Medicaid (MDCD), and IBM
+MarketScan Medicare Supplemental Beneficiaries (MDCR). Our analyses included a
+total of 784,561, 66,820 and 101,661 patients initiating treatment with ACE
+inhibitors and 395,740, 45,999 and 69,798 patients initiating treatment with
+beta blockers in CCAE, MDCD and MDCR respectively (Table 1). Adequate numbers of
+patients were included in all strata of predicted acute MI risk.
 
 ## Step 3: Prediction
 
 We internally developed separate prediction models for acute MI in all 3
-databases.
-
-
-The prediction models were estimated on the propensity score matched (1:1)
-subset of the population, using caliper of 0.2 and after excluding patients
-having the outcomes any time prior to treatment initiation. We chose a time
-horizon of 2 years after inclusion into the target cohort. For this
-demonstration, we developed the prediction models using LASSO logistic
-regression with 3-fold cross validation for hyper-parameter selection. For this
-demonstration, we developed the prediction models using LASSO logistic
-regression with 3-fold cross validation for hyper-parameter selection.
+databases. The prediction models were estimated on the propensity score matched
+(1:1) subset of the sample, using caliper of 0.2 and after excluding patients
+having the outcome any time prior to treatment initiation. We chose a time
+horizon of 2 years after inclusion into the target cohort. We developed the
+prediction models using LASSO logistic regression with 3-fold cross validation
+for hyper-parameter selection.
 
 The models developed in the 3 databases had moderate discriminative performance
 (internally validated) with no major issues of overfitting to any cohort except
 for the case of CCAE database in which the derived prediction model performed
-better in the comparator cohort (Table \@ref(tab:tableAucs)). We also observed
-lower performance of the prediction model developed in MDCR compared to the
-other 2 databases. Results on the calibration of the prediction models can be
-found in the supplement.
-
-\captionsetup{width=\textwidth}
-```{r tableAucs, cache=TRUE, echo=FALSE, results='asis', booktabs=TRUE}
-table <- tibble(
-  population = c(
-    "Matched set",
-    "Treatment cohort",
-    "Comparator cohort",
-    "Entire population"
-  ),
-  ccae = c(
-    75.78, 70.65, 79.1, 74.06
-  ),
-  mdcd = c(
-    78.12, 78.29, 80.26, 79.46
-  ),
-  mdcr = c(
-    71.09, 69.03, 68.53, 69.07
-  )
-)
-
-knitr::kable(
-  table,
-  format = "latex",
-  longtable = TRUE,
-  booktabs = TRUE,
-  col.names = c(
-    "Population", "CCAE", "MDCD", "MDCR"
-  ),
-   format.args = list(
-    big.mar = ","
-  ),
-  caption = "Discriminiative ability (c-statistic) of the derived prediction models for acute myocardial infarction in the matched set (development set), the treatment cohort, the comparator cohort and the etnire population in CCAE, MDCD and MDCR"
-)
-```
-
+better in the comparator cohort (Table 2). We also observed lower performance of
+the prediction model developed in MDCR compared to the other 2 databases (see
+supplementary material).
 
 ## Step 4: Estimation
 
 Our aim was to estimate the average treatment effects on the relative and the
 absolute scale within strata of predicted acute MI risk.
 
-We used patient-level predictions to stratify the patient population into 4 risk
-quarters. Within risk strata, relative effects were estimated using Cox
+We used patient-level predictions to stratify the sample into 4 MI risk
+quarters. Within risk quarters, relative effects were estimated using Cox
 regression and absolute effects were estimated from the Kaplan-Meier estimate
 differences at 2 years after treatment initiation. To adjust for observed
 confounding within risk strata, we estimated propensity scores using the same
 approach as in the development of prediction models. We used the estimated
-propensity scores to stratify patients into 5 strata, within each risk quarter.
+propensity scores to stratify patients into 5 strata, within each risk
+quarter. The risk quarter-specific effect estimates were derived by averaging
+over the estimates within the propensity score fifths.
 
-In general, there was sufficient overlap of propensity score distribution in all
-risk strata (Figure \@ref(fig:psDensity)). If empirical equipoise was not
-achieved, the validity of the comparative effectiveness estimates would be
-questionable.
-
-```{r psDensity, cache = TRUE, echo=FALSE, fig.cap="Preference score distributions for the evaluation of heterogeneity of the effect of ACE inhibitors compared to beta blockers on acute MI based on quarters of predicted acute MI risk. The preference score is a transformation of the propensity score that adjusts for prevalence differences between populations.", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/PsDensity.tiff")))
-```
-
-Propensity score adjustment achieved balance for most of the considered
-covariates, measured using standardized mean differences before and after
-adjustment (Figure \@ref(fig:covariateBalance)). However, in lower risk strata
-imbalances persisted for a substantial subset of the covariates, all related to
-pregnancy findings. This was anticipated (use of ACE inhibitors is specifically
+There was sufficient overlap of propensity score distribution in all risk strata
+(Figure 2). Propensity score adjustment achieved balance for most of the
+considered covariates, measured using standardized mean differences before and
+after adjustment (Figure 3). However, in lower risk strata imbalances persisted
+for a substantial subset of the covariates, all related to pregnancy
+findings. This was anticipated (use of ACE inhibitors is specifically
 contraindicated during pregnancy) and was already pointed out in
-[@Suchard2019].
-
-```{r covariateBalance, cache = TRUE, echo=FALSE, fig.cap="Patient characteristic balance for ACE inhibitors and beta blockers before and after stratification on the propensity scores. Each dot represents the standardized difference of means for a single covariate before (x-axis) and after (y-axis) stratification", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/CovariateBalance.tiff")))
-```
+[@Suchard2019]. Therefore, treatment effect estimates in the lowest risk
+quarters of CCAE and MDCR may still be subject to residual confounding and
+should be interpreted with care.
 
 ## Step 5: Presentation of results
+
+```{r, echo=FALSE}
+map_outcomes <- readRDS(here("data/processed/multipleRseeAnalyses/map_outcomes.rds"))
+map_exposures <- readRDS(here("data/processed/multipleRseeAnalyses/map_exposures.rds"))
+relative <- readRDS(here("data/processed/multipleRseeAnalyses/mappedOverallRelativeResults.rds")) %>%
+  left_join(map_outcomes, by = c("estOutcome" = "outcome_id")) %>%
+  select(-estOutcome) %>%
+  rename("estOutcome" = "outcome_name") %>%
+  left_join(map_outcomes, by = c("stratOutcome" = "outcome_id")) %>%
+  select(-stratOutcome) %>%
+  rename("stratOutcome" = "outcome_name") %>%
+  left_join(map_exposures, by = c("treatment" = "exposure_id")) %>%
+  select(-treatment) %>%
+  rename("treatment" = "exposure_name") %>%
+  left_join(map_exposures, by = c("comparator" = "exposure_id")) %>%
+  select(-comparator) %>%
+  rename("comparator" = "exposure_name")
+
+absolute <- readRDS(here("data/processed/multipleRseeAnalyses/mappedOverallAbsoluteResults.rds")) %>%
+  left_join(map_outcomes, by = c("estOutcome" = "outcome_id")) %>%
+  select(-estOutcome) %>%
+  rename("estOutcome" = "outcome_name") %>%
+  left_join(map_outcomes, by = c("stratOutcome" = "outcome_id")) %>%
+  select(-stratOutcome) %>%
+  rename("stratOutcome" = "outcome_name") %>%
+  left_join(map_exposures, by = c("treatment" = "exposure_id")) %>%
+  select(-treatment) %>%
+  rename("treatment" = "exposure_name") %>%
+  left_join(map_exposures, by = c("comparator" = "exposure_id")) %>%
+  select(-comparator) %>%
+  rename("comparator" = "exposure_name") %>%
+  mutate(
+    estimate = 100 * estimate,
+    lower    = 100 * lower,
+    upper    = 100 * upper
+  )
+  
+
+acute_mi_relative <- relative %>%
+  filter(
+    stratOutcome == "acute_myocardial_infarction",
+    estOutcome == "acute_myocardial_infarction"
+  )
+
+acute_mi_absolute <- absolute %>%
+  filter(
+    stratOutcome == "acute_myocardial_infarction",
+    estOutcome == "acute_myocardial_infarction"
+  )
+acute_cough_relative <- relative %>%
+  filter(
+    stratOutcome == "acute_myocardial_infarction",
+    estOutcome == "cough"
+  )
+
+acute_cough_absolute <- absolute %>%
+  filter(
+    stratOutcome == "acute_myocardial_infarction",
+    estOutcome == "cough"
+  )
+```
 
 For hospitalization with acute MI there was an increasing trend in favor ACE
 inhibitors compared to beta blockers on the relative scale (hazard ratios
 decreased) with increasing acute MI risk. More specifically, hazard ratios
-decreased from 0.98 (0.77 to 1.26; 95% CI), 1.30 (0.51 to 3.22; 95% CI) and 1.03
-(0.82 to 1.29; 95% CI) to 0.76 (0.71 to 0.82; 95% CI), 0.94 (0.82 to 1.07; 95%
-CI) and 1.03 (0.93 to 1.15; 95% CI) in CCAE, MDCD and MDCR respectively (Figure
-\@ref(fig:combinedRelative)). In terms of hospitalization with heart failure
-relative treatment effect estimates favored ACE inhibitors across all risk
-strata in all databases. We found no differences between the two treatments in
-their effect on stroke on the relative scale. In terms of the safety outcomes we
-found an increased risk of cough and angioedema on the relative scale across all
-risk strata. In the case of cough, this effect decreased with increasing risk of
-acute MI---from 1.37 (1.33 to 1.41; 95% CI), 1.35 (1.24 to 1.48; 95% CI)
-and 1.37 (1.29 to 1.45; 95% CI) in the lowest acute MI risk quarter to 1.26
-(1.22 to 1.29; 95% CI), 1.07 (1.00 to 1.14) and 1.10 (1.04 to 1.17; 95% CI) in
-the highest acute MI risk quarter in CCAE, MDCD and MDCR respectively.
-
-```{r combinedRelative, cache=TRUE, echo=FALSE, fig.cap="Overview of heterogeneity of ACE-inhibitors treatment on the relative scale (hazard ratios) within strata of predicted risk of acute MI. Values below 1 favor ACE inhibitors, while values above 1 favor beta blockers.", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/CombinedRelative.tiff")))
-```
+decreased from 
+`r acute_mi_relative %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(estimate)`
+(`r acute_mi_relative %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(lower)` to
+`r acute_mi_relative %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI) and
+`r acute_mi_relative %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(estimate)`
+(`r acute_mi_relative %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(lower)` to
+`r acute_mi_relative %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI) to
+`r acute_mi_relative %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(estimate)`
+(`r acute_mi_relative %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(lower)` to
+`r acute_mi_relative %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(upper)`;
+95\% CI),
+`r acute_mi_relative %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(estimate)`
+(`r acute_mi_relative %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(lower)` to
+`r acute_mi_relative %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(upper)`;
+95\% CI) in CCAE and MDCD respectively (Figure 4). In MDCR hazard ratios remained stable
+from
+`r acute_mi_relative %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(estimate)`
+(`r acute_mi_relative %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(lower)` to
+`r acute_mi_relative %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI) in the lowest MI risk quarter to 
+`r acute_mi_relative %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(estimate)`
+(`r acute_mi_relative %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(lower)` to
+`r acute_mi_relative %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(upper)`;
+95\% CI). In terms of hospitalization with heart failure relative treatment
+effect estimates favored ACE inhibitors across all risk strata in all
+databases. We found no differences between the two treatments in their effect on
+stroke on the relative scale. In terms of the safety outcomes, we found an
+increased ACE-inhibitor risk of cough and angioedema on the relative scale
+across all risk strata. In the case of cough, this effect decreased with
+increasing risk of acute MI---from 
+`r acute_cough_relative %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(estimate)`
+(`r acute_cough_relative %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(lower)` to
+`r acute_cough_relative %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI),
+`r acute_cough_relative %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(estimate)`
+(`r acute_cough_relative %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(lower)` to
+`r acute_cough_relative %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI), and
+`r acute_cough_relative %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(estimate)`
+(`r acute_cough_relative %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(lower)` to
+`r acute_cough_relative %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(upper)`;
+95\% CI) to
+`r acute_cough_relative %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(estimate)`
+(`r acute_cough_relative %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(lower)` to
+`r acute_cough_relative %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(upper)`;
+95\% CI),
+`r acute_cough_relative %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(estimate)`
+(`r acute_cough_relative %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(lower)` to
+`r acute_cough_relative %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(upper)`;
+95\% CI), and
+`r acute_cough_relative %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(estimate)`
+(`r acute_cough_relative %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(lower)` to
+`r acute_cough_relative %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(upper)`;
+95\% CI) in CCAE, MDCD, and MDCR, respectively.
 
 We observed an increasing trend of treatment effect on the absolute scale with
 increasing acute MI risk in favor of ACE inhibitors in terms of acute MI in all
-databases except for MDCR---from -0.03% (-0.08% to 0.01%; 95% CI), -0.05%
-(-0.18% to 0.08%; 95% CI) and -0.02% (-0.24% to 0.19%; 95% CI) in the lowest
-acute MI risk quarter to 0.54% (0.36% to 0.71%; 95% CI), 0.29% (-0.39%
-to 0.97%; 95% CI) and -0.39% (-0.96% to 0.18%; 95% CI) in the highest acute MI
-risk quarter in CCAE, MDCD and MDCR, respectively (Figure \@ref(fig:figure12)).
-We found no difference on the absolute scale for stroke across risk strata.
-Absolute risk differences did not favor ACE inhibitors compared to beta blockers
-in terms of cough, even though this effect again diminished with increasing
-acute MI risk---from -4.14% (-4.62% to -3.66%; 95% CI), -6.45% (-9.12% to
--3.78%; 95% CI) and -4.81% (-5.76% to -3.85%; 95% CI) in the lowest acute MI
-risk quarter to -2.57% (-2.99% to -2.15%; 95% CI), -1.11% (-2.93% to 0.70%; 95%
-CI) and -1.69% (-2.83% to -0.55%; 95% CI) in the highest acute MI risk quarter
-in CCAE, MDCD and MDCR, respectively. In terms of angioedema absolute risk
-differences were very small due to the rarity of the outcome.
+databases except for MDCR---from
+`r acute_mi_absolute %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(estimate)`\%
+(`r acute_mi_absolute %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(lower)`\% to
+`r acute_mi_absolute %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(upper)`\%;
+95\% CI), 
+`r acute_mi_absolute %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(estimate)`\%
+(`r acute_mi_absolute %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(lower)`\% to
+`r acute_mi_absolute %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(upper)`\%;
+95\% CI), and
+`r acute_mi_absolute %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(estimate)`\%
+(`r acute_mi_absolute %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(lower)`\% to
+`r acute_mi_absolute %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(upper)`\%;
+95\% CI) in the lowest acute MI risk quarter to
+`r acute_mi_absolute %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(estimate)`\%
+(`r acute_mi_absolute %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(lower)`\% to
+`r acute_mi_absolute %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(upper)`\%;
+95\% CI),
+`r acute_mi_absolute %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(estimate)`\%
+(`r acute_mi_absolute %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(lower)`\% to
+`r acute_mi_absolute %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(upper)`\%;
+95\% CI), and
+`r acute_mi_absolute %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(estimate)`\%
+(`r acute_mi_absolute %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(lower)`\% to
+`r acute_mi_absolute %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(upper)`\%;
+95\% CI) in the highest acute MI risk quarter in CCAE, MDCD, and MDCR,
+respectively (Figure 5). We found no difference on the absolute scale for stroke
+across risk strata. Absolute risk differences did not favor ACE inhibitors
+compared to beta blockers in terms of cough, even though this effect again
+diminished with increasing acute MI risk---from 
+`r acute_cough_absolute %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(estimate)`\%
+(`r acute_cough_absolute %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(lower)`\% to
+`r acute_cough_absolute %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(upper)`\%;
+95\% CI),
+`r acute_cough_absolute %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(estimate)`\%
+(`r acute_cough_absolute %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(lower)`\% to
+`r acute_cough_absolute %>% filter(database == "mdcd", riskStratum == "Q1") %>% pull(upper)`\%;
+95\% CI), and
+`r acute_cough_absolute %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(estimate)`\%
+(`r acute_cough_absolute %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(lower)`\% to
+`r acute_cough_absolute %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(upper)`\%;
+95\% CI) in the lowest acute MI risk quarter to
+`r acute_cough_absolute %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(estimate)`\%
+(`r acute_cough_absolute %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(lower)`\% to
+`r acute_cough_absolute %>% filter(database == "ccae", riskStratum == "Q4") %>% pull(upper)`\%;
+95\% CI),
+`r acute_cough_absolute %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(estimate)`\%
+(`r acute_cough_absolute %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(lower)`\% to
+`r acute_cough_absolute %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(upper)`\%;
+95\% CI), and
+`r acute_cough_absolute %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(estimate)`\%
+(`r acute_cough_absolute %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(lower)`\% to
+`r acute_cough_absolute %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(upper)`\%;
+95\% CI) in the highest acute MI risk quarter in CCAE, MDCD, and MDCR,
+respectively. In terms of angioedema absolute risk differences were very small
+due to the rarity of the outcome.
 
-```{r figure12, cache=TRUE, echo=FALSE, fig.cap="Overview of heterogeneity of ACE-inhibitors treatment on the absolute scale within strata of predicted risk of acute MI. Estimates of absolute treatment effect are derived as the difference in Kaplan-Meier estimates at 730 after inclusion. Values above 0 favor ACE inhibitors, while values below 0 favor beta blockers.", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/CombinedAbsolute.tiff")))
-```
-
-These results suggest that treatment with ACE-inhibitors, compared to treatment
-with beta blockers, may be focused on the higher risk patients, in whom the
-benefits outweigh the harms, while beta blockers may be a viable option in lower
-risk patients, in whom the benefit-harm tradeoff is more favorable. This is in
-accordance with earlier findings that beta blockers should also be considered as
-first-line treatment for younger hypertensive patients [@Cruickshank2007;
-@Khan2006]. This analysis, however, was carried out as demonstration of the
-framework and more rigorous analyses are required to make any suggestions for
-clinical practice.
-
-The results of the analyses performed can be accessed and assessed through a
+The results of all the analyses performed can be accessed and assessed through a
 publicly available web application (https://data.ohdsi.org/AceBeta9Outcomes).
+
+## Evaluation
+
+Meta-analyses focusing on the age of the patients have found that beta blockers
+could only be considered as a first-line treatment for hypertension in younger
+patients, in whom risk of cardiovascular events is lower. The results of our
+case study are in line with this evidence, suggesting that treatment with
+ACE-inhibitors, compared to treatment with beta blockers, may be focused on the
+higher risk patients, in whom the benefits outweigh the harms, while beta
+blockers may be a viable option in lower risk patients, in whom the benefit-harm
+tradeoff is more favorable. Our case study however, was carried out as
+demonstration of the framework and more rigorous analyses are required to make
+any suggestions for clinical practice.
 
 # Discussion
 
-We developed a framework for the assessment of heterogeneity of treatment effect
-in large observational databases using a risk modeling approach. The framework
-is implemented in an open source R-package in the OHDSI methods library
-(<https://github.com/OHDSI/RiskStratifiedEstimation>). As a proof-of-concept, we
-used our framework to evaluate heterogeneity of the effect of treatment with
-ACE-inhibitors compared to beta blockers on 3 efficacy and 6 safety outcomes.
+The major contribution of our work is the development of a risk-based framework
+for the assessment of treatment effect heterogeneity in large observational
+databases. This fills a gap identified in the literature after the development
+of guidelines for performing such analyses in the RCT setting
+[@Kent2019;@PathEnE]. As an additional contribution we developed the software
+for implementing this framework in practice and made it publicly available. We
+made our software compatible to databases mapped to OMOP-CDM which allows
+researchers to easily implement our framework in a global network of healthcare
+databases. In our case study we demonstrated the use of our framework for the
+evaluation of treatment effect heterogeneity ACE-inhibitors compared to beta
+blockers on 3 efficacy and 6 safety outcomes. Our results were in line with the
+findings of relevant literature focusing on the age of patients treated for
+hypertension. We propose that this framework is implemented any time treatment
+effect estimation in high-dimensional observational data is undertaken.
 
-In recent years several methods for the evaluation of treatment effect
-heterogeneity have been developed in the setting of RCTs [@Rekkas2020].
-However, low power and restricted prior knowledge on the mechanisms of variation
-in treatment effect are often inherent in RCTs, which are usually adequately
+In recent years several methods for the analysis of treatment effect
+heterogeneity have been developed in the setting of RCTs [@Rekkas2020]. However,
+low power and restricted prior knowledge on the mechanisms of variation in
+treatment effect are often inherent in RCTs, which are usually adequately
 powered only for the analysis of the primary outcome. Observational databases
 contain a large amount of information on treatment assignment and outcomes of
-interest, while also capturing key patient characteristics. Our framework
-provides a standardized approach that can be used to leverage available
-information from these data sources, allowing for large-scale risk-based
-assessment of treatment effect heterogeneity. It is an addition to the rapidly
-expanding literature of approaches for evaluating treatment effect
-heterogeneity. Multiple outcomes can be evaluated in patient subgroups of
-similar baseline outcome risk. Multiple outcome risk stratification schemes can
-also be considered. However, this should be done with caution, as it may hinder
-the interpretability of the results, in a similar manner as typical subgroup
-analyses.
+interest, while also capturing key patient characteristics. They contain readily
+available data on patient subpopulations of interest for which no RCT has
+focused before either due to logistical or ethical reasons. However,
+observational databases are usually not built with research in mind and
+therefore are susceptible to biases, poorly measured outcomes and
+missingness. All these can both obscure true treatment effect heterogeneity or
+falsely introduce it when there is none [@Varadhan2013]. Therefore, inferences
+on both overall treatment effect estimates and treatment effect heterogeneity
+need to rely on strong, often unverifiable, assumptions, despite the
+advancements and guidance on best practices. However, it has been shown that
+well-designed observational studies on average replicate RCT results, even
+though often differences in magnitude may occur
+[@Concato2000;@Ioannidis2001;@Dahabreh2012@Anglemyer2014;@Franklin2017]. Our
+framework is in line with the recently suggested paradigm of high-throughput
+observational studies using consistent and standardized methods for improving
+reproducibility in observational research [@Schuemie2018].
 
-Recently, guidelines on the application of risk modeling approaches for the
-assessment of heterogeneity of treatment effect in RCT settings have been
-proposed [@Kent2019; @PathEnE]. Our framework aims to translate these
-guidelines to the observational setting while also providing a toolkit for its
-implementation within OHDSI. It encourages open science as it requires accurate
-definition of the research questions translated into clear and reproducible
-cohort definitions that can easily be shared among researchers. Researchers with
-access to different databases mapped to OMOP-CDM can also very easily extend
-their overall analyses with risk-based assessment of treatment effect
-heterogeneity. This enables collaboration among multiple sites with access to
-different patient populations. We propose that the framework is implemented any
-time treatment effect estimation in high-dimensional observational data is
-undertaken.
-
-Several considerations need to be made. First, estimates may be
-biased due to the observational nature of the data. We attempt to account for
-potential confounding by estimating propensity scores within strata of predicted
-risk. These scores are estimated using regularized logistic regression on a
-large set of pre-defined covariates. However, such approaches do not account for
-unobserved confounding [@Liu2013]. Several sensitivity analyses have been
-proposed in the literature for measuring the robustness of results in the
-presence of unobserved confounding. Another approach is to calibrate estimates
-and confidence intervals based on a large set of negative controls
-[@Schuemie2014; @Schuemie2571]. Negative controls are treatment-outcome pairs
-for which a null effect has been established. Estimating these effects within
+We attempt to account for potential confounding by estimating propensity scores
+within strata of predicted risk. These scores are estimated using regularized
+logistic regression on a large set of pre-defined covariates. However, such
+approaches do not account for unobserved confounding. Several sensitivity
+analyses have been proposed in the literature for measuring the robustness of
+results in the presence of unobserved confounding
+[@Liu2013;@Cinelli2019]. Another approach is to calibrate estimates and
+confidence intervals based on a large set of negative controls
+[@Schuemie2014;@Schuemie2571]. Negative controls are treatment-outcome pairs for
+which a null effect has been established. Estimating these effects within
 available data provides an approximation of the null distribution that can be
 used to empirically recalibrate effect estimates. Future work may extend our
 framework with this type of analyses.
 
-Our method provides a risk-stratified assessment of treatment effect
-heterogeneity. However, even though stratification can provide a useful overview
-for clinical interpretation, these results cannot be applied to individuals in a
-straightforward manner, as we are still estimating subgroup effects
-[@Kent2019]. Presentation of treatment effects as a continuous function of
-risk would be more helpful, but is methodologically challenging. Future research
-is necessary for the development of methods for continuous risk-based assessment
-of HTE.
-
-Ideally, externally derived and adequately validated prediction model would be
-preferred for analyzing treatment effect heterogeneity [@Kent2010]. In the
-absence of such prediction models an internally-developed risk prediction model
-can be considered. Earlier simulations of RCT studies have shown that internal
-models developed on the combined treatment and control arms blinded to treatment
-gave relatively unbiased estimates of treatment effect across the spectrum of
-risk [@Burke2014]. However, in observational databases treatment arms may
-significantly differ in sample size. Because the prediction model will possibly
-better fit to the larger treatment arm, spurious treatment-covariate
-interactions may be introduced in the prediction model, leading to sub-optimal
-risk stratification. As a remedy, we first match the patients in the treatment
-and the comparator cohorts on the basis of propensity scores. Additionally, we
+Ideally, externally derived and adequately validated prediction models would be
+preferred for analyzing treatment effect heterogeneity. In the absence of such
+prediction models an internally-developed risk prediction model can be
+considered. Earlier simulations of RCT studies have shown that internal models
+developed on the combined treatment and control arms blinded to treatment gave
+relatively unbiased estimates of treatment effect across the spectrum of risk
+[@Burke2014]. However, in observational databases treatment arms may significantly
+differ in sample size. Because the prediction model will possibly fit better to
+the larger treatment arm, spurious treatment-covariate interactions may be
+introduced in the prediction model, leading to sub-optimal risk
+stratification. As a remedy, we first match the patients in the treatment and
+the comparator cohorts on the basis of propensity scores. Additionally, we
 propose to assess model performance in the separate treatment arms to evaluate
-its aptness for risk stratification.
+its aptness for risk stratification. Other methods for achieving covariate
+balance before fitting the prediction model can be considered. For example,
+weighting on the propensity scores would be another valid approach.
 
-Recently, disease risk scores have been explored as an alternative to propensity
-scores for balancing covariates [@Glynn2012; @Hansen2008]. In our method, the
-objective of risk stratification is not balancing, but assessing the variation
-of treatment effects on multiple outcomes across patients with different levels
-of baseline risk. Although using the same risk model for balancing and
-risk-based HTE analysis may sound attractive, we note that our method only uses
-one risk model for stratification and one propensity score model for balancing,
-while separate disease risk score models would be required to analyze treatment
+Disease risk scores have been explored as an alternative to propensity scores
+for balancing covariates [@Glynn2012;@Hansen2008]. In our method, the objective
+of risk stratification is not balancing, but assessing the variation of
+treatment effects on multiple outcomes across patients with different levels of
+baseline risk. Although using the same risk model for balancing and risk-based
+HTE analysis may sound attractive, we note that our method only uses one risk
+model for stratification and one propensity score model for balancing, while
+separate disease risk score models would be required to analyze treatment
 effects for each of the multiple outcomes.
 
-In conclusion, the proof-of-concept study demonstrates the feasibility of our
-framework for risk-based assessment of treatment effect heterogeneity in large
-observational data. The standardized framework is easily applicable and highly
-informative whenever treatment effect estimation in high-dimensional
-observational data is of interest. Our framework is a supplement to the
-population-level effect estimation framework developed within OHDSI and, in the
-presence of an adequately discriminating prediction model, can be used to make
-the overall results more actionable for medical decision making.
 
 \newpage
 # References
@@ -699,4 +664,3 @@ the overall results more actionable for medical decision making.
 \setlength{\parindent}{0in}
 \setlength{\leftskip}{0in}
 \noindent
-  
