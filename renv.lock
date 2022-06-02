@@ -111,6 +111,24 @@
         "urltools"
       ]
     },
+    "EmpiricalCalibration": {
+      "Package": "EmpiricalCalibration",
+      "Version": "3.0.0",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "EmpiricalCalibration",
+      "RemoteUsername": "ohdsi",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "3a8bf7ed88451aa94fad1d85f80270849ee8ae56",
+      "Hash": "a4b5862bb890fb1e2018b0c19fadec16",
+      "Requirements": [
+        "Rcpp",
+        "ggplot2",
+        "gridExtra",
+        "rlang"
+      ]
+    },
     "FeatureExtraction": {
       "Package": "FeatureExtraction",
       "Version": "3.2.0",

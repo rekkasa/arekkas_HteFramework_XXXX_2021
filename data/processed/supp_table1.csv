@@ -1,0 +1,37 @@
+database,riskStratum,treatmentPersons,comparatorPersons,treatmentDays,comparatorDays,treatmentOutcomes,comparatorOutcomes,stratOutcome,estOutcome,treatment,comparator
+ccae,Q1,190641,154752,272359,215366,228,127,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+ccae,Q2,242256,103137,355184,151554,631,318,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+ccae,Q3,251961,93431,366917,135327,1168,539,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+ccae,Q4,239338,106055,333513,146365,2075,1508,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+ccae,Q1,190439,154291,272074,214785,277,425,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+ccae,Q2,241930,102734,354725,150991,579,427,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+ccae,Q3,251429,92811,366205,134523,936,666,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+ccae,Q4,237868,103453,331593,143091,1905,1857,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+ccae,Q1,190200,154164,271769,214606,357,356,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+ccae,Q2,241312,102417,353856,150571,680,412,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+ccae,Q3,250160,92309,364467,133831,1005,531,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+ccae,Q4,232899,102578,325137,141894,1664,1008,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+mdcd,Q1,21636,24204,32074,33511,32,27,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+mdcd,Q2,28974,16863,42897,24769,151,95,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+mdcd,Q3,31219,14619,47965,22748,399,233,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+mdcd,Q4,25217,20621,39654,31740,866,1006,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+mdcd,Q1,21568,24088,31974,33356,99,148,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+mdcd,Q2,28820,16645,42665,24460,327,249,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+mdcd,Q3,30866,14241,47411,22158,710,514,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+mdcd,Q4,23484,17288,36969,26967,1596,1857,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+mdcd,Q1,21512,24058,31891,33286,66,89,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+mdcd,Q2,28648,16572,42404,24324,230,128,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+mdcd,Q3,30456,14112,46764,21979,501,316,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+mdcd,Q4,23385,18783,36825,29069,960,939,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+mdcr,Q1,29741,15169,45807,23600,243,134,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+mdcr,Q2,29087,15822,44749,24743,360,218,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+mdcr,Q3,27247,17662,41633,27200,514,337,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+mdcr,Q4,20830,24080,31071,35277,647,791,acute myocardial infarction,acute myocardial infarction,ACE inhibitors,Beta blockers
+mdcr,Q1,29613,15061,45605,23444,440,324,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+mdcr,Q2,28911,15622,44487,24456,585,477,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+mdcr,Q3,26896,17136,41127,26452,827,789,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+mdcr,Q4,19846,21853,29708,32397,1070,1704,acute myocardial infarction,hospitalization with heart failure,ACE inhibitors,Beta blockers
+mdcr,Q1,29190,14878,45008,23171,378,245,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+mdcr,Q2,28305,15376,43580,24112,523,359,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+mdcr,Q3,26009,16832,39815,26011,680,544,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers
+mdcr,Q4,19013,22075,28515,32657,702,931,acute myocardial infarction,stroke,ACE inhibitors,Beta blockers

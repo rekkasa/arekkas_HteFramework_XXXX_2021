@@ -1,23 +1,31 @@
 #!/usr/bin/env Rscript
 
 library(tidyverse)
+library(scales)
+
+args <- commandArgs(trailingOnly = TRUE)
+fileType <- as.character(args[1])
 
 databases <- c("ccae", "mdcd", "mdcr")
+map_exposures <- readRDS("data/processed/map_exposures.rds")
 pp <- list()
 
 for (i in seq_along(databases)) {
-  pattern <- paste0("^bal.*", databases[i], ".*104_104*.rds")
+  pattern <- paste0("^balance.*", databases[i], ".*2_2.*.rds")
   pp[[i]] <- list.files(
-    path = ".scratch/AceBeta9Outcomes/data",
+    path = "data/processed",
     pattern = pattern,
     full.names = TRUE
   ) %>%
-    map(readRDS) %>%
+    readRDS() %>%
     bind_rows() %>%
     tibble() %>%	
     CohortMethod::plotCovariateBalanceScatterPlot(
       beforeLabel = "",
       afterLabel = toupper(databases[i])
+    ) +
+    scale_x_continuous(
+      labels = comma_format(decimal.mark = intToUtf8("0x00B7"))
     ) +
     ggplot2::facet_grid(
       ~riskStratum
@@ -43,12 +51,32 @@ for (i in seq_along(databases)) {
 }
 
 plot <- gridExtra::grid.arrange(pp[[1]], pp[[2]], pp[[3]], nrow = 3)
-ggsave(
-  "figures/CovariateBalance.tiff",
-  plot, 
-  compression = "lzw", 
-  width       = 600, 
-  height      = 350,
-  units       = "mm",
-  dpi         = 300
-)
+
+
+if (fileType == "tiff") {
+  fileName <- "CovariateBalance.tiff"
+  ggsave(
+    file.path(
+      "figures",
+      fileName
+    ),
+    plot, 
+    compression = "lzw", 
+    width       = 650, 
+    height      = 350,
+    units       = "mm",
+    dpi         = 300
+  )
+} else if (fileType == "svg") {
+  fileName <- "CovariateBalance.svg"
+  ggsave(
+    file.path(
+      "figures",
+      fileName
+    ),
+    plot, 
+    width       = 650, 
+    height      = 350,
+    units       = "mm"
+  )
+}

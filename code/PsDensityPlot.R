@@ -1,23 +1,35 @@
 #!/usr/bin/env Rscript
 
 library(tidyverse)
+library(scales)
+
+
+args <- commandArgs(trailingOnly = TRUE)
+fileType <- as.character(args[1])
 
 databases <- c("ccae", "mdcd", "mdcr")
+map_exposures <- readRDS("data/processed/map_exposures.rds")
 pp <- list()
 
 for (i in seq_along(databases)) {
-  pattern <- paste0("^ps.*", databases[i], ".*104_104.*.rds")
+  pattern <- paste0("^ps.*", databases[i], ".*2_2.*.rds")
   pp[[i]] <- list.files(
-    path = ".scratch/AceBeta9Outcomes/data",
+    path = "data/processed",
     pattern = pattern,
     full.names = TRUE
   ) %>%
-    map(readRDS) %>%
-    bind_rows() %>%
-    mutate(
-      treatment = as.factor(treatment)
+    readRDS() %>%
+    dplyr::mutate(
+      treatment = ifelse(
+        treatment == 1,
+        treatmentId,
+        comparatorId
+      )
     ) %>%
-    tibble() %>%	
+    dplyr::left_join(
+    map_exposures,
+    by = c("treatment" = "exposure_id")
+  ) %>% 
     ggplot2::ggplot(
       ggplot2::aes(
         x = x,
@@ -27,12 +39,15 @@ for (i in seq_along(databases)) {
     ggplot2::geom_density(
       stat = "identity",
       ggplot2::aes(
-        color = treatment,
-        group = treatment,
-        fill = treatment
+        color = exposure_name,
+        group = exposure_name,
+        fill = exposure_name
       )
     ) +
-    scale_x_continuous(breaks = seq(0, 1, .5)) +
+    scale_x_continuous(
+      breaks = seq(0, 1, .5),
+      labels = comma_format(decimal.mark = intToUtf8("0x00B7"))
+    ) +
     ggplot2::facet_grid(~riskStratum) +
     ggplot2::ylab(
       label = toupper(databases[i])
@@ -78,4 +93,33 @@ ggsave(
   units       = "mm",
   dpi         = 300
 )
+
+if (fileType == "tiff") {
+  fileName <- "PsDensity.tiff"
+  ggsave(
+    file.path(
+      "figures",
+      fileName
+    ),
+    plot, 
+    compression = "lzw", 
+    width       = 650, 
+    height      = 350,
+    units       = "mm",
+    dpi         = 300
+  )
+} else if (fileType == "svg") {
+  fileName <- "PsDensity.svg"
+  ggsave(
+    file.path(
+      "figures",
+      fileName
+    ),
+    plot, 
+    width       = 650, 
+    height      = 350,
+    units       = "mm"
+  )
+}
+
 
