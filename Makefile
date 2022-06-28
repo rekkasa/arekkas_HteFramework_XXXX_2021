@@ -149,6 +149,7 @@ data/processed/table1.csv : code/Table1.R
 	$<
 
 submission/manuscript.pdf : submission/manuscript.rmd\
+	submission/references.bib\
 	data/processed/table1.csv\
 	figures/NegativeControlsPlot_ccae.tiff\
 	figures/PsDensity.tiff\

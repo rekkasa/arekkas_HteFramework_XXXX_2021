@@ -5,10 +5,11 @@ author:
   - David van Klaveren, PhD$^{2,3}$, 
   - Patrick B. Ryan, PhD$^4$
   - Ewout W. Steyerberg, PhD$^{3,5}$
-  - David M. Kent, PhD$^2$
+  - David M. Kent, MD$^2$
   - Peter R. Rijnbeek, PhD${^1}$
 output:
-    bookdown::pdf_document2: default
+    bookdown::pdf_document2:
+      number_sections: false
     bookdown::word_document2:
         reference_docx: reference.docx
 geometry: margin=1.0in
@@ -19,7 +20,7 @@ header-includes:
   - \usepackage{setspace}
   - \doublespacing
   - \usepackage[left, pagewise]{lineno}
-  - \usepackage{caption}
+  - \usepackage[labelfont=bf]{caption}
 editor_options: 
   chunk_output_type: console
 bibliography: references.bib
@@ -37,9 +38,9 @@ d <- function(x, decimals = 2) {
 inline_hook <- function(x) {
   if (is.numeric(x)) {
     if (abs(x - round(x)) < .Machine$double.eps) {
-      formatted <- format(x, digits = 1, big.mark = " ")
+      formatted <- format(x, digits = 1, big.mark = ",")
     } else {
-      formatted <- format(x, digits = 1, nsmall = 2, big.mark = " ", decimal.mark = intToUtf8("0x00B7"))
+      formatted <- format(x, digits = 1, nsmall = 2, big.mark = ",", decimal.mark = ".")
     }
   } else {
     formatted <- x
@@ -96,36 +97,33 @@ research and innovation programme and EFPIA.
 \newpage
 # Abstract {-}
 \singlespacing 
-**Background**: Treatment effects are often anticipated to vary across groups of
-patients with different baseline risk. Implementation of a risk-based approach
-in the RCT setting has shown evidence of increase in statistical power for the
-evaluation of treatment effect heterogeneity. The aim of this study was to
-extend this approach to the observational setting using a standardized scalable
-framework.
-
-**Methods**: The proposed framework consists of
-five steps: 1) definition of the problem, i.e. the population, the treatment,
-the comparator and the outcome(s) of interest; 2) identification of relevant
-databases; 3) development of a prediction model for the outcome(s) of interest;
-4) estimation of relative and absolute treatment effect within strata of
-predicted risk, after adjusting for observed confounding; 5) presentation of the
-results. We demonstrate our framework by evaluating heterogeneity of the effect
-of angiotensin-converting enzyme (ACE) inhibitors versus beta blockers on three
-efficacy and six safety outcomes across three observational databases. 
-
-**Findings**: In our demostration, patients at low risk of acute myocardial
-infarction (MI) received negligible absolute benefits for all three efficacy
-outcomes, though they were more pronounced in the highest risk quarter,
-especially for hospitalization with heart failure. However, failing diagnostics
-showed evidence of residual imbalances even after propensity score adjustment.
-
-**Interpretation**: Application of our framework allows for
-observing differential risk of outcomes across strata, which offers the
-opportunity to consider the benefit-harm tradeoff between alternative treatments
-within targeted subpopulations. Further insights may arise by application to
-safety and effectiveness questions on a large scale.
-
-**Funding**: European Health Data and Evidence Network (EHDEN) project.
+Treatment effects are often anticipated to vary across groups of patients with
+different baseline risk. The Predictive Approaches to Treatment Effect
+Heterogeneity (PATH) statement focused on baseline risk as a robust predictor of
+treatment effect and provided guidance on risk-based assessment of treatment
+effect heterogeneity in the RCT setting. The aim of this study was to extend
+this approach to the observational setting using a standardised scalable
+framework. The proposed framework consists of five steps: 1) definition of the
+research aim, i.e., the population, the treatment, the comparator and the
+outcome(s) of interest; 2) identification of relevant databases; 3) development
+of a prediction model for the outcome(s) of interest; 4) estimation of relative
+and absolute treatment effect within strata of predicted risk, after adjusting
+for observed confounding; 5) presentation of the results. We demonstrate our
+framework by evaluating heterogeneity of the effect of angiotensin-converting
+enzyme (ACE) inhibitors versus beta blockers on three efficacy and six safety
+outcomes across three observational databases.  The proposed framework can
+supplement any comparative effectiveness study. We provide a publicly available
+R software package for applying this framework to any database mapped to the
+Observational Medical Outcomes Partnership Common Data Model. In our
+demonstration, patients at low risk of acute myocardial infarction received
+negligible absolute benefits for all three efficacy outcomes, though they were
+more pronounced in the highest risk quarter, especially for hospitalisation with
+heart failure. However, failing diagnostics showed evidence of residual
+imbalances even after adjustment for observed confounding. Our framework allows
+for the evaluation of differential treatment effects across risk strata, which
+offers the opportunity to consider the benefit-harm trade-off between
+alternative treatments. It is easily applicable and highly informative whenever
+treatment effect estimation in observational data is of interest.
 
 \vspace{10mm}
 
@@ -134,7 +132,7 @@ safety and effectiveness questions on a large scale.
 \doublespacing 
 \linenumbers
 
-# Introduction
+# INTRODUCTION
 
 Treatment effects can often vary substantially across individual patients,
 causing overall effect estimates to be inaccurate for a significant proportion
@@ -186,8 +184,8 @@ such analyses at scale within any observational database mapped to OMOP-CDM. In
 a case study we analyzed heterogeneity of the effects of first-line hypertension
 treatment.
 
-# Methods
 
+# RESULTS
 The proposed framework defines 5 distinct steps: 1) definition of the research
 aim; 2) identification of the databases within which the analyses will be
 performed; 3) prediction of outcomes of interest; 4) estimation of absolute and
@@ -197,98 +195,9 @@ proposed framework and made it publicly available
 (https://github.com/OHDSI/RiskStratifiedEstimation). An overview of the entire
 framework can be found in Figure \ref{fig:graphicalAbstract}.
 
-## Step 1: General definition of the research aim
-
-The typical research aim is: “to compare the effect of treatment to a comparator
-treatment in patients with disease with respect to outcomes $O_1,\dots,O_n$”.
-
-We use a comparative cohort design. This means that at least three cohorts of
-patients need to be defined at this stage of the framework:
-
-- A single treatment cohort ($T$) which includes patients with disease receiving
-  the target treatment of interest.
-- A single comparator cohort ($C$) which includes patients with disease receiving
-  the comparator treatment.
-- One or more outcome cohorts ($O_1,\dots,O_n$) that contain patients
-  developing the outcomes of interest
-  
-## Step 2: Identification of the databases {#methods2}
-
-Including in our analyses multiple databases representing the population of
-interest potentially increases the generalizability of results. Furthermore, the
-cohorts should preferably have adequate sample size with adequate follow-up time
-to ensure precise effect estimation, even within smaller risk strata. Other
-relevant issues such as the depth of data capture (the precision at which
-measurements, lab tests, conditions are recorded) and the reliability of data
-entry should also be considered.
-
-## Step 3: Prediction {#methods3}
-
-Our method relies on adequately separating patients into subgroups based on
-their baseline risk for the outcomes of interest. Therefore, a model---either an
-existing external model adequately validated on an internally developed
-one---assigning patient-level risk is required. For internally developing a risk
-prediction model we adopt the standardized framework focused on observational
-data that ensures adherence to existing guidelines [@Reps2018; @Collins2015;
-@Moons2015].
-
-We first need to define a target cohort of patients, i.e. the set of patients on
-whom the prediction model will be developed. In our case, the target cohort is
-generated by pooling the already defined treatment and comparator cohorts. We
-develop the prediction model on the propensity score-matched (1:1) subset of the
-pooled sample to avoid differentially fitting between treatment arms, thus
-introducing spurious interactions with treatment
-[@Burke2014;@vanKlaveren2019]. We also need to define a set of patients that
-experience the outcome of interest, i.e. the outcome cohort. Finally, we need to
-decide the time frame within which the predictions will be carried out, i.e. the
-patients' time at risk. Subsequently, we can develop the prediction model. 
-
-It is important that the prediction models display good discriminative ability
-to ensure that risk-based subgroups are accurately defined. A performance
-overview of the derived prediction models including discrimination and
-calibration both in the propensity score matched subset, the entire sample and
-separately for treated and comparator patients should also be reported.
-
-## Step 4: Estimation {#methods4}
-
-We estimate treatment effects (both on the relative and the absolute scale)
-within risk strata defined using the prediction model of step 3. We often
-consider four risk strata, but fewer or more strata can be considered depending on
-the available power for accurately estimating stratum-specific treatment
-effects. Effect estimation may be focused on the difference in outcomes for a
-randomly selected person from the risk stratum (average treatment effect) or for
-a randomly selected person from the treatment cohort within the risk stratum
-receiving the treatment under study (average treatment effect on the treated).
-
-Any appropriate method for the analysis of relative and absolute treatment
-effects can be considered, as long as the this is done consistently in all risk
-strata. Common statistical metrics are odds ratios or hazard ratios for relative
-scale estimates and differences in observed proportions or differences in
-Kaplan-Meier estimates for absolute scale estimates, depending on the problem at
-hand. We estimate propensity scores within risk strata which we then use to
-match patients from different treatment cohorts or to stratify them into groups
-with similar propensity scores or to weigh each patient’s contribution to the
-estimation process [@Austin2011].
-
-Prior to analyzing results, it is crucial to ensure that all diagnostics are passed
-in all risk strata. The standard diagnostics we carry out include analysis of
-the overlap of propensity score distributions and calculation of standardized
-mean differences of the covariates before and after propensity score
-adjustment. Finally, we use effect estimates for a large set of negative control
-outcomes (i.e. outcomes known to not be related with any of the exposures under
-study) to evaluate the presence of residual confounding not accounted for by
-propensity score adjustment [@Schuemie2014;@Schuemie2571;@Schuemie2018].
-
-## Step 5: Presentation of results {#methods5}
-
-In the presence of a positive treatment effect and a well-discriminating
-prediction model we expect an increasing pattern of the differences in the
-absolute scale, even if treatment effects remain constant on the relative scale
-across risk strata. Due to this scale-dependence of treatment effect
-heterogeneity, results should be assessed both on the relative and the absolute
-scale. 
-
-## Case study
+```{r graphicalAbstract, cache=TRUE, echo=FALSE, fig.cap="Illustration of how the framework is applied on two observational databases, preferably mapped to OMOP-CDM.", fig.show="hold", out.width = '100%'}
+include_graphics(here("figures/rsee_process.png"))
+```
 
 As a demonstration, we evaluated if our proposed method was able to identify
 treatment effect heterogeneity of ACE inhibitors compared to beta blockers using
@@ -297,10 +206,7 @@ the relative and on the absolute scale. We focused on three efficacy outcomes
 (acute MI, hospitalization with heart failure and ischemic or hemorrhagic
 stroke) and six safety outcomes (hypokalemia, hyperkalemia, hypotension,
 angioedema, cough and abnormal weight gain). We used data from three US-based
-claims databases. The analysis plan was the framework outlined in steps 1
-through 5.
-
-# Results
+claims databases. 
 
 ## Step 1: General definition of the research aim
 
@@ -352,15 +258,89 @@ patients initiating treatment with ACE inhibitors and
 `r patientNumbers %>% filter(database == "mdcd") %>% pull(comparator)`, and
 `r patientNumbers %>% filter(database == "mdcr") %>% pull(comparator)`
 patients initiating treatment with beta blockers in CCAE, MDCD and MDCR
-respectively (Table \@ref(tab:incidenceOverall)). Adequate numbers of patients were included in all strata
-of predicted acute MI risk (Supplement: Table XX).
+respectively (Table \@ref(tab:incidenceOverall)). Adequate numbers of patients
+were included in all strata of predicted acute MI risk (Supplement, page 26).
+
+```{r incidenceOverall, echo = FALSE}
+map_outcomes <- readRDS(here("data/processed/map_outcomes.rds"))
+map_exposures <- readRDS(here("data/processed/map_exposures.rds"))
+
+incidence <- readRDS(here::here("data/processed/incidenceOverall.rds")) %>%
+  left_join(map_outcomes, by = c("outcomeId" = "outcome_id")) %>%
+  select(-outcomeId) %>%
+  rename("outcomeId" = "outcome_name") %>%
+  mutate(
+    treatmentYears = round(treatmentDays / 365),
+    comparatorYears = round(comparatorDays / 365),
+    outcomeId =  factor(
+    outcomeId,
+    levels = c(
+      "acute_myocardial_infarction",
+      "hospitalization_with_heart_failure",
+      "stroke"
+    ),
+    labels = c(
+        "acute myocardial infarction",
+        "hospitalization with heart failure",
+        "stroke"
+      )
+    )
+  ) %>%
+  arrange(database, outcomeId)
+  
+kableExtra::kbl(
+  incidence %>%
+    select(
+      outcomeId,
+      treatmentPersons,
+      treatmentYears,
+      treatmentOutcomes,
+      comparatorPersons,
+      comparatorYears,
+      comparatorPersons,
+      comparatorOutcomes
+    ),
+  align = "llrrrrr",
+  format = "latex",
+  booktabs = TRUE,
+  longtable = TRUE,
+  escape = FALSE,
+  caption = "Number of patients, person years and events within quarters of predicted risk for acute MI for the three efficacy outcomes of the study (acute MI, hospitalization with heart failure and ischemic or hemorrhagic stroke) across the three databases.",
+  linesep = c('', '', '', '\\addlinespace'),
+  col.names = c(
+    "Outcome",
+    "Patients",
+    "Person years",
+    "Outcomes",
+    "Patients",
+    "Person years",
+    "Outcomes"
+  ),
+  format.args = list(
+    big.mar      = ",",
+    decimal.mark = "."
+  )
+) %>%
+  kableExtra::add_header_above(
+    c(
+      " " = 1,
+      "ACE inhibitors" = 3,
+      "Beta blockers" = 3
+    )
+  ) %>%
+  kableExtra::group_rows("CCAE", 1, 3) %>%
+  kableExtra::group_rows("MDCD", 4, 6) %>%
+  kableExtra::group_rows("MDCR", 7, 9) %>%
+  kableExtra::kable_styling(font_size = 7)
+
+```
 
 ## Step 3: Prediction
 
 We internally developed separate prediction models for acute MI in all three
 databases. The prediction models were estimated on the propensity score matched
 (1:1) subset of the sample, using caliper of 
-`r format(.2, nsmall = 1, decimal.mark = intToUtf8("0x00B7"))`
+`r format(.2, nsmall = 1, decimal.mark = ".")`
 and after excluding patients having the outcome any time prior to treatment
 initiation. We chose a 2-year time at risk for patients and developed the
 prediction models using LASSO logistic regression with 3-fold cross validation
@@ -370,7 +350,80 @@ The models had moderate discriminative performance (internally validated) with
 no major issues of overfitting to any cohort except for the case of CCAE, where
 the derived prediction model performed better in the comparator cohort (Table
 \@ref(tab:predictionPerformance)). We also observed lower performance of the
-prediction model developed in MDCR compared to the other 2 databases.
+prediction model developed in MDCR compared to the other 2 databases
+(Supplement, page 29).
+
+```{r predictionPerformance, echo = FALSE}
+predictionPerformance <- readRDS(here("data/processed/predictionPerformance.rds")) %>%
+  filter(
+    stratOutcome == 2
+  ) %>%
+  select(c("database", "cohort", "AUROC", "95% lower AUROC", "95% upper AUROC")) %>%
+  rename(
+    "lower" = "95% lower AUROC",
+    "upper" = "95% upper AUROC"
+  ) %>%
+  mutate(
+    auc = paste(
+      format(round(AUROC, 2), nsmall = 2), 
+      paste0(
+        "(",
+        format(round(lower, 2), nsmall = 2),
+        ", ",
+        format(round(upper, 2), nsmall = 2),
+        ")"
+      )
+    )
+  ) %>%
+  select(-c("AUROC", "lower", "upper")) %>%
+  mutate(
+    cohort = factor(
+      cohort,
+      levels = c(
+        "Matched",
+        "Treatment",
+        "Comparator",
+        "EntirePopulation"
+      ),
+      labels = c(
+        "Matched",
+        "Treatment",
+        "Comparator",
+        "Entire population"
+      )
+    ),
+    database = factor(
+      database,
+      levels = c(
+        "ccae",
+        "mdcd",
+        "mdcr"
+      )
+    )
+  ) %>%
+  arrange(database, cohort) 
+
+kableExtra::kbl(
+  predictionPerformance %>% pivot_wider(id_cols = "cohort", names_from = "database", values_from = "auc"),
+  align = "lrrr",
+  format = "latex",
+  booktabs = TRUE,
+  longtable = TRUE,
+  escape = FALSE,
+  caption = "Discriminative ability (c-statistic) of the derived prediction models for acute myocardial infarction in the matched set (development set), the treatment cohort, the comparator cohort and the entire population in CCAE, MDCD and MDCR.",
+  linesep = c('', '', '', '\\addlinespace'),
+  col.names = c(
+    "Population",
+    "CCAE",
+    "MDCD",
+    "MDCR"
+  ),
+  format.args = list(
+    big.mar      = ","
+  )
+) %>%
+  kableExtra::kable_styling(font_size = 7)
+```
 
 ## Step 4: Estimation
 
@@ -390,13 +443,21 @@ derived in these strata are not well-supported (Figure
 balance plots comparing standardized mean differences of patient characteristics
 before and afrer PS adjustment, where in many cases the commonly accepted bound
 of 
-`r format(.1, nsmall = 1, decimal.mark = intToUtf8("0x00B7"))`
+`r format(.1, nsmall = 1, decimal.mark = ".")`
 is violated (Figure \ref{fig:covariateBalance}). This is more pronounced in the
 lowest acute MI risk quarter of CCAE, but remains an issue for a small number of
 covariates in all CCAE risk strata. This diagnostic also fails for the two lower
 acute MI risk quarters of MDCD. Often the persisting imbalances were linked to
 pregnancy outcomes, which can be explained by the contraindication of ACE
 inhibitors in this condition. Analyses in MDCR passed all diagnostics.
+
+```{r psDensity, cache=TRUE, echo=FALSE, fig.cap="\\textbf{Preference score distributions in quarters of predicted acute MI risk}. The preference score is a transformation of the propensity score that adjusts for prevalence differences between populations. Higher overlap of the preference score distributions indicates that patients in the target and the comparator cohorts are more similar in terms of the predicted probability of receiving treatment (ACE inhibitors).", fig.show="hold", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/PsDensity.tiff")))
+```
+
+```{r covariateBalance, cache=TRUE, echo=FALSE, fig.cap="\\textbf{Patient characteristic balance for ACE inhibitors and beta blockers before and after stratification on the propensity scores}. Each dot represents the standardized difference of means for a single covariate before (x-axis) and after (y-axis) stratification. A commonly used rule of thumb suggests that standardized mean differences above 0.1 indicate insufficient covariate balance post propensity score adjustment.", fig.show="hold", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/CovariateBalance.tiff")))
+```
 
 Finally, the distribution of the estimated relative risks with regard to 30
 negative control outcomes indicated unresolved confounding within the lowest
@@ -406,14 +467,15 @@ right part of Figure \ref{fig:negativeControls}: panel Q1. This suggests
 significant negative effects of ACE inhibitors compared to beta blockers on
 causally unrelated outcomes, pointing at unresolved differences between the two
 treatment arms. This was not the case in the other risk quarters of CCAE, or in
-any risk quarter of MDCD and MDCR (Supplement, Figure XX).
+any risk quarter of MDCD and MDCR (Supplement, pages 34-36).
+
+```{r negativeControls, cache=TRUE, echo=FALSE, fig.cap="\\textbf{Systematic error}. Effect size estimates for the negative controls (true hazard ratio = 1). Estimates below the diagonal dashed lines are statistically significant (alpha = 0.05) different from the true effect size. A well-calibrated estimator should have the true effect size within the 95 percent confidence interval 95 percent of times.", fig.show="hold", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/NegativeControlsPlot_ccae.tiff")))
+```
 
 ## Step 5: Presentation of results
 
 ```{r, echo=FALSE}
-map_outcomes <- readRDS(here("data/processed/map_outcomes.rds"))
-
-map_exposures <- readRDS(here("data/processed/map_exposures.rds"))
 overall <- readRDS(here("data/processed/mappedOverallResults.rds")) %>%
   left_join(map_outcomes, by = c("outcomeId" = "outcome_id")) %>%
   select(-outcomeId) %>%
@@ -427,11 +489,11 @@ overall <- readRDS(here("data/processed/mappedOverallResults.rds")) %>%
   mutate(
     outcome = gsub("_", " ", outcome),
     estimate = paste0(
-      format(round(estimate, 2), nsmall = 2, decimal.mark = intToUtf8("0x00B7")),
+      format(round(estimate, 2), nsmall = 2),
       " (", 
-      format(round(lower, 2), nsmall = 2, decimal.mark = intToUtf8("0x00B7")),
+      format(round(lower, 2), nsmall = 2),
       ", ", 
-      format(round(upper, 2), nsmall = 2, decimal.mark = intToUtf8("0x00B7")),
+      format(round(upper, 2), nsmall = 2),
       ")"
     )
   ) %>%
@@ -528,7 +590,7 @@ ratios decreased from
 `r acute_mi_relative %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(estimate)`
 (`r acute_mi_relative %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(lower)` to
 `r acute_mi_relative %>% filter(database == "mdcd", riskStratum == "Q4") %>% pull(upper)`;
-95\% CI) in CCAE and MDCD respectively (Figure 4). In MDCR hazard ratios
+95\% CI) in CCAE and MDCD respectively (Figure \ref{fig:relative}). In MDCR hazard ratios
 increased from
 `r acute_mi_relative %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(estimate)`
 (`r acute_mi_relative %>% filter(database == "mdcr", riskStratum == "Q1") %>% pull(lower)` to
@@ -575,6 +637,27 @@ the case of cough, this effect decreased with increasing risk of acute MI---from
 `r acute_cough_relative %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(upper)`;
 95\% CI) in CCAE, MDCD, and MDCR, respectively.
 
+```{r overallTable, echo = FALSE}
+kableExtra::kbl(
+  overall %>% 
+    pivot_wider(id_cols = "outcome", names_from = "database", values_from = "estimate"),
+  format = "latex",
+  align = "lrrr",
+  caption = "Overall hazard ratios.",
+  booktabs = TRUE,
+  col.names = c(
+    "Outcome",
+    "CCAE",
+    "MDCD",
+    "MDCR"
+  )) %>%
+  kableExtra::kable_styling(latex_options = "HOLD_position")
+```
+
+```{r relative, cache=TRUE, echo=FALSE, fig.cap="\\textbf{Overview of heterogeneity of ACE inhibitors treatment on the relative scale (hazard ratios) within strata of predicted risk of acute MI}. Values below 1 favor ACE inhibitors, while values above 1 favor beta blockers.", fig.show="hold", out.width = '100%'}
+    grid::grid.raster(tiff::readTIFF(here("figures/CombinedRelative_acute_myocardial_infarction.tiff")))
+```
+
 We observed an increasing trend of treatment effect on the absolute scale with
 increasing acute MI risk in favor of ACE inhibitors in terms of acute MI in all
 databases except for MDCR---from
@@ -602,10 +685,10 @@ databases except for MDCR---from
 (`r acute_mi_absolute %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(lower)`\% to
 `r acute_mi_absolute %>% filter(database == "mdcr", riskStratum == "Q4") %>% pull(upper)`\%;
 95\% CI) in the highest acute MI risk quarter in CCAE, MDCD, and MDCR,
-respectively (Figure 5). We found no difference on the absolute scale for stroke
-across risk strata. Absolute risk differences did not favor ACE inhibitors
-compared to beta blockers in terms of cough, even though this effect again
-diminished with increasing acute MI risk---from 
+respectively (Figure \ref{fig:absolute}). We found no difference on the absolute
+scale for stroke across risk strata. Absolute risk differences did not favor ACE
+inhibitors compared to beta blockers in terms of cough, even though this effect
+again diminished with increasing acute MI risk---from
 `r acute_cough_absolute %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(estimate)`\%
 (`r acute_cough_absolute %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(lower)`\% to
 `r acute_cough_absolute %>% filter(database == "ccae", riskStratum == "Q1") %>% pull(upper)`\%;
@@ -633,6 +716,10 @@ diminished with increasing acute MI risk---from
 respectively. In terms of angioedema absolute risk differences were very small
 due to the rarity of the outcome.
 
+```{r absolute, cache=TRUE, echo=FALSE, fig.cap="\\textbf{Overview of heterogeneity of ACE inhibitors treatment on the absolute scale within strata of predicted risk of acute MI}. Estimates of absolute treatment effect are derived as the difference in Kaplan-Meier estimates at two years after inclusion. Values above 0 favor ACE inhibitors, while values below 0 favor beta blockers.  ", fig.show="hold", out.width = '100%'}
+grid::grid.raster(tiff::readTIFF(here("figures/CombinedAbsolute_acute_myocardial_infarction.tiff")))
+```
+
 The results of all the analyses performed can be accessed and assessed through a
 publicly available web application (https://data.ohdsi.org/AceBeta9Outcomes).
 
@@ -658,7 +745,7 @@ MDCR which renders these conclusions less dependable.
 Note that any conclusions drawn are for demonstration purposes only and should
 be interpreted under this very limited setting.
 
-# Discussion
+# DISCUSSION
 
 The major contribution of our work is the development of a risk-based framework
 for the assessment of treatment effect heterogeneity in large observational
@@ -729,8 +816,112 @@ risk-based assessment of treatment effect heterogeneity in large observational
 data. It is easily applicable and highly informative whenever treatment effect
 estimation in high-dimensional observational data is of interest.
 
+# METHODS
+
+
+## Step 1: General definition of the research aim
+
+The typical research aim is: “to compare the effect of treatment to a comparator
+treatment in patients with disease with respect to outcomes $O_1,\dots,O_n$”.
+
+We use a comparative cohort design. This means that at least three cohorts of
+patients need to be defined at this stage of the framework:
+
+- A single treatment cohort ($T$) which includes patients with disease receiving
+  the target treatment of interest.
+- A single comparator cohort ($C$) which includes patients with disease receiving
+  the comparator treatment.
+- One or more outcome cohorts ($O_1,\dots,O_n$) that contain patients
+  developing the outcomes of interest
+  
+## Step 2: Identification of the databases {#methods2}
+
+Including in our analyses multiple databases representing the population of
+interest potentially increases the generalizability of results. Furthermore, the
+cohorts should preferably have adequate sample size with adequate follow-up time
+to ensure precise effect estimation, even within smaller risk strata. Other
+relevant issues such as the depth of data capture (the precision at which
+measurements, lab tests, conditions are recorded) and the reliability of data
+entry should also be considered.
+
+## Step 3: Prediction {#methods3}
+
+Our method relies on adequately separating patients into subgroups based on
+their baseline risk for the outcomes of interest. Therefore, a model---either an
+existing external model adequately validated on an internally developed
+one---assigning patient-level risk is required. For internally developing a risk
+prediction model we adopt the standardized framework focused on observational
+data that ensures adherence to existing guidelines [@Reps2018; @Collins2015;
+@Moons2015].
+
+We first need to define a target cohort of patients, i.e. the set of patients on
+whom the prediction model will be developed. In our case, the target cohort is
+generated by pooling the already defined treatment and comparator cohorts. We
+develop the prediction model on the propensity score-matched (1:1) subset of the
+pooled sample to avoid differentially fitting between treatment arms, thus
+introducing spurious interactions with treatment
+[@Burke2014;@vanKlaveren2019]. We also need to define a set of patients that
+experience the outcome of interest, i.e. the outcome cohort. Finally, we need to
+decide the time frame within which the predictions will be carried out, i.e. the
+patients' time at risk. Subsequently, we can develop the prediction model. 
+
+It is important that the prediction models display good discriminative ability
+to ensure that risk-based subgroups are accurately defined. A performance
+overview of the derived prediction models including discrimination and
+calibration both in the propensity score matched subset, the entire sample and
+separately for treated and comparator patients should also be reported.
+
+## Step 4: Estimation {#methods4}
+
+We estimate treatment effects (both on the relative and the absolute scale)
+within risk strata defined using the prediction model of step 3. We often
+consider four risk strata, but fewer or more strata can be considered depending on
+the available power for accurately estimating stratum-specific treatment
+effects. Effect estimation may be focused on the difference in outcomes for a
+randomly selected person from the risk stratum (average treatment effect) or for
+a randomly selected person from the treatment cohort within the risk stratum
+receiving the treatment under study (average treatment effect on the treated).
+
+Any appropriate method for the analysis of relative and absolute treatment
+effects can be considered, as long as the this is done consistently in all risk
+strata. Common statistical metrics are odds ratios or hazard ratios for relative
+scale estimates and differences in observed proportions or differences in
+Kaplan-Meier estimates for absolute scale estimates, depending on the problem at
+hand. We estimate propensity scores within risk strata which we then use to
+match patients from different treatment cohorts or to stratify them into groups
+with similar propensity scores or to weigh each patient’s contribution to the
+estimation process [@Austin2011].
+
+Prior to analyzing results, it is crucial to ensure that all diagnostics are passed
+in all risk strata. The standard diagnostics we carry out include analysis of
+the overlap of propensity score distributions and calculation of standardized
+mean differences of the covariates before and after propensity score
+adjustment. Finally, we use effect estimates for a large set of negative control
+outcomes (i.e. outcomes known to not be related with any of the exposures under
+study) to evaluate the presence of residual confounding not accounted for by
+propensity score adjustment [@Schuemie2014;@Schuemie2571;@Schuemie2018].
+
+## Step 5: Presentation of results {#methods5}
+
+In the presence of a positive treatment effect and a well-discriminating
+prediction model we expect an increasing pattern of the differences in the
+absolute scale, even if treatment effects remain constant on the relative scale
+across risk strata. Due to this scale-dependence of treatment effect
+heterogeneity, results should be assessed both on the relative and the absolute
+scale. 
+
+# DATA AVAILABILITY
+The claims data are proprietary and are not publicly accessible due to
+restricted user agreement. Database descriptions are available in the
+Supplementary Material.
+
+# CODE AVAILABILITY
+Our analysis code is publicly available under the MIT license at
+https://github.com/mi-erasmusmc/AceBeta9Outcomes.
+
+
 \newpage
-# References
+# REFERENCES
 \nolinenumbers
 \setlength{\parindent}{-0.25in}
 \setlength{\leftskip}{0.25in}
@@ -742,207 +933,17 @@ estimation in high-dimensional observational data is of interest.
 
 \newpage
 
-# Tables and figures
+# AUTHOR CONTRIBUTIONS
+AR, PRR, and DVK conceptualised the study. AR, DVK, EWS, and DMK developed the
+methodology. PBR, and PRR acquired the data and AR analysed the data. AR
+developed the software and wrote drafted the manuscript, which was critically
+reviewed by DVK, PBR, EWS, DMK, and PRR. AR, PBR, and PRR had full access to the
+raw data. All authors read and approved the manuscript and had final
+responsibility for the decision to submit for publication.
 
-```{r incidenceOverall, echo = FALSE}
-incidence <- readRDS(here::here("data/processed/incidenceOverall.rds")) %>%
-  left_join(map_outcomes, by = c("outcomeId" = "outcome_id")) %>%
-  select(-outcomeId) %>%
-  rename("outcomeId" = "outcome_name") %>%
-  mutate(
-    treatmentYears = round(treatmentDays / 365),
-    comparatorYears = round(comparatorDays / 365),
-    outcomeId =  factor(
-    outcomeId,
-    levels = c(
-      "acute_myocardial_infarction",
-      "hospitalization_with_heart_failure",
-      "stroke"
-    ),
-    labels = c(
-        "acute myocardial infarction",
-        "hospitalization with heart failure",
-        "stroke"
-      )
-    )
-  ) %>%
-  arrange(database, outcomeId)
-  
-kableExtra::kbl(
-  incidence %>%
-    select(
-      outcomeId,
-      treatmentPersons,
-      treatmentYears,
-      treatmentOutcomes,
-      comparatorPersons,
-      comparatorYears,
-      comparatorPersons,
-      comparatorOutcomes
-    ),
-  align = "llrrrrr",
-  format = "latex",
-  booktabs = TRUE,
-  longtable = TRUE,
-  escape = FALSE,
-  caption = "Number of patients, person years and events within quarters of predicted risk for acute MI for the three efficacy outcomes of the study (acute MI, hospitalization with heart failure and ischemic or hemorrhagic stroke) across the three databases.",
-  linesep = c('', '', '', '\\addlinespace'),
-  col.names = c(
-    "Outcome",
-    "Patients",
-    "Person years",
-    "Outcomes",
-    "Patients",
-    "Person years",
-    "Outcomes"
-  ),
-  format.args = list(
-    big.mar      = " ",
-    decimal.mark = "."
-  )
-) %>%
-  kableExtra::add_header_above(
-    c(
-      " " = 1,
-      "ACE inhibitors" = 3,
-      "Beta blockers" = 3
-    )
-  ) %>%
-  kableExtra::group_rows("CCAE", 1, 3) %>%
-  kableExtra::group_rows("MDCD", 4, 6) %>%
-  kableExtra::group_rows("MDCR", 7, 9) %>%
-  kableExtra::kable_styling(font_size = 7)
-
-```
-
-\newpage
-
-```{r predictionPerformance, echo = FALSE}
-predictionPerformance <- readRDS(here("data/processed/predictionPerformance.rds")) %>%
-  filter(
-    stratOutcome == 2
-  ) %>%
-  select(c("database", "cohort", "AUROC", "95% lower AUROC", "95% upper AUROC")) %>%
-  rename(
-    "lower" = "95% lower AUROC",
-    "upper" = "95% upper AUROC"
-  ) %>%
-  mutate(
-    auc = paste(
-      format(round(AUROC, 2), nsmall = 2, decimal.mark = intToUtf8("0x00B7")),
-      paste0(
-        "(",
-        format(round(lower, 2), nsmall = 2, decimal.mark = intToUtf8("0x00B7")),
-        ", ",
-        format(round(upper, 2), nsmall = 2, decimal.mark = intToUtf8("0x00B7")),
-        ")"
-      )
-    )
-  ) %>%
-  select(-c("AUROC", "lower", "upper")) %>%
-  mutate(
-    cohort = factor(
-      cohort,
-      levels = c(
-        "Matched",
-        "Treatment",
-        "Comparator",
-        "EntirePopulation"
-      ),
-      labels = c(
-        "Matched",
-        "Treatment",
-        "Comparator",
-        "Entire population"
-      )
-    ),
-    database = factor(
-      database,
-      levels = c(
-        "ccae",
-        "mdcd",
-        "mdcr"
-      )
-    )
-  ) %>%
-  arrange(database, cohort) 
-
-kableExtra::kbl(
-  predictionPerformance %>% pivot_wider(id_cols = "cohort", names_from = "database", values_from = "auc"),
-  align = "lrrr",
-  format = "latex",
-  booktabs = TRUE,
-  longtable = TRUE,
-  escape = FALSE,
-  caption = "Discriminative ability (c-statistic) of the derived prediction models for acute myocardial infarction in the matched set (development set), the treatment cohort, the comparator cohort and the entire population in CCAE, MDCD and MDCR.",
-  linesep = c('', '', '', '\\addlinespace'),
-  col.names = c(
-    "Population",
-    "CCAE",
-    "MDCD",
-    "MDCR"
-  ),
-  format.args = list(
-    big.mar      = ","
-  )
-) %>%
-  kableExtra::kable_styling(font_size = 7)
-```
-
-\newpage
-
-```{r overallTable, echo = FALSE}
-kableExtra::kbl(
-  overall %>% 
-    pivot_wider(id_cols = "outcome", names_from = "database", values_from = "estimate"),
-  format = "latex",
-  align = "lrrr",
-  caption = "Overall hazard ratios.",
-  booktabs = TRUE,
-  col.names = c(
-    "Outcome",
-    "CCAE",
-    "MDCD",
-    "MDCR"
-  ),
-  format.args = list(decimal.mark = intToUtf8("0x00B7"))
-) %>%
-  kableExtra::kable_styling(latex_options = "HOLD_position")
-```
-
-
-\newpage
-
-```{r graphicalAbstract, cache=TRUE, echo=FALSE, fig.cap="Illustration of how the framework is applied on two observational databases, preferably mapped to OMOP-CDM.", fig.show="hold", out.width = '100%'}
-include_graphics(here("figures/graphicalAbstract.png"))
-```
-
-\newpage
-
-```{r psDensity, cache=TRUE, echo=FALSE, fig.cap="Preference score distributions for the evaluation of heterogeneity of the effect of ACE inhibitors compared to beta blockers on acute MI based on quarters of predicted acute MI risk. The preference score is a transformation of the propensity score that adjusts for prevalence differences between populations.", fig.show="hold", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/PsDensity.tiff")))
-```
-
-\newpage
-
-```{r covariateBalance, cache=TRUE, echo=FALSE, fig.cap="Patient characteristic balance for ACE inhibitors and beta blockers before and after stratification on the propensity scores. Each dot represents the standardized difference of means for a single covariate before (x-axis) and after (y-axis) stratification.", fig.show="hold", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/CovariateBalance.tiff")))
-```
-
-\newpage
-
-```{r negativeControls, cache=TRUE, echo=FALSE, fig.cap=" Systematic error. Effect size estimates for the negative controls (true hazard ratio = 1). Estimates below the diagonal dashed lines are statistically significant (alpha = 0.05) different from the true effect size. A well-calibrated estimator should have the true effect size within the 95 percent confidence interval 95 percent of times.", fig.show="hold", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/NegativeControlsPlot_ccae.tiff")))
-```
-
-\newpage
-
-```{r relative, cache=TRUE, echo=FALSE, fig.cap="Overview of heterogeneity of ACE inhibitors treatment on the relative scale (hazard ratios) within strata of predicted risk of acute MI. Values below 1 favor ACE inhibitors, while values above 1 favor beta blockers.", fig.show="hold", out.width = '100%'}
-    grid::grid.raster(tiff::readTIFF(here("figures/CombinedRelative_acute_myocardial_infarction.tiff")))
-```
-
-\newpage
-
-```{r absolute, cache=TRUE, echo=FALSE, fig.cap="Overview of heterogeneity of ACE inhibitors treatment on the absolute scale within strata of predicted risk of acute MI. Estimates of absolute treatment effect are derived as the difference in Kaplan-Meier estimates at two years after inclusion. Values above 0 favor ACE inhibitors, while values below 0 favor beta blockers.  ", fig.show="hold", out.width = '100%'}
-grid::grid.raster(tiff::readTIFF(here("figures/CombinedAbsolute_acute_myocardial_infarction.tiff")))
-```
+# COMPETING INTERESTS
+AR and PRR work for a group that received unconditional research grants from
+Boehringer-Ingelheim, GSK, Janssen Research & Development, Novartis, Pfizer,
+Yamanouchi, and Servier. None of these grants result in a conflict of interest
+for the content of this paper. PBR is an employee of Janssen R&D, subsidiary of
+Johnson & Johnson. DVK, DMK, EWS have nothing to declare.
