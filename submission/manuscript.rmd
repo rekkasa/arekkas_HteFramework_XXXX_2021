@@ -10,6 +10,7 @@ author:
 output:
     bookdown::pdf_document2:
       number_sections: false
+      keep_tex: true
     bookdown::word_document2:
         reference_docx: reference.docx
 geometry: margin=1.0in
@@ -90,7 +91,7 @@ Email: a.rekkas@erasmusmc.nl
 This work has been performed in the European Health Data and
 Evidence Network (EHDEN) project. This project has received funding from the
 Innovative Medicines Initiative 2 Joint Undertaking (JU) under grant agreement
-No 8069six. The JU receives support from the European Union’s Horizon 2020
+No 806968. The JU receives support from the European Union’s Horizon 2020
 research and innovation programme and EFPIA.
 
 \newpage
@@ -195,7 +196,7 @@ proposed framework and made it publicly available
 (https://github.com/OHDSI/RiskStratifiedEstimation). An overview of the entire
 framework can be found in Figure \ref{fig:graphicalAbstract}.
 
-```{r graphicalAbstract, cache=TRUE, echo=FALSE, fig.cap="Illustration of how the framework is applied on two observational databases, preferably mapped to OMOP-CDM.", fig.show="hold", out.width = '100%'}
+```{r graphicalAbstract, cache=TRUE, echo=FALSE, fig.cap="\\textbf{Framework execution diagram}. Illustration of how the framework is applied on two observational databases, preferably mapped to OMOP-CDM.", fig.show="hold", out.width = '100%'}
 include_graphics(here("figures/rsee_process.png"))
 ```
 
@@ -259,7 +260,8 @@ patients initiating treatment with ACE inhibitors and
 `r patientNumbers %>% filter(database == "mdcr") %>% pull(comparator)`
 patients initiating treatment with beta blockers in CCAE, MDCD and MDCR
 respectively (Table \@ref(tab:incidenceOverall)). Adequate numbers of patients
-were included in all strata of predicted acute MI risk (Supplement, page 26).
+were included in all strata of predicted acute MI risk (Supplementary Tables
+S1-S3).
 
 ```{r incidenceOverall, echo = FALSE}
 map_outcomes <- readRDS(here("data/processed/map_outcomes.rds"))
@@ -350,8 +352,7 @@ The models had moderate discriminative performance (internally validated) with
 no major issues of overfitting to any cohort except for the case of CCAE, where
 the derived prediction model performed better in the comparator cohort (Table
 \@ref(tab:predictionPerformance)). We also observed lower performance of the
-prediction model developed in MDCR compared to the other 2 databases
-(Supplement, page 29).
+prediction model developed in MDCR compared to the other 2 databases.
 
 ```{r predictionPerformance, echo = FALSE}
 predictionPerformance <- readRDS(here("data/processed/predictionPerformance.rds")) %>%
@@ -467,7 +468,7 @@ right part of Figure \ref{fig:negativeControls}: panel Q1. This suggests
 significant negative effects of ACE inhibitors compared to beta blockers on
 causally unrelated outcomes, pointing at unresolved differences between the two
 treatment arms. This was not the case in the other risk quarters of CCAE, or in
-any risk quarter of MDCD and MDCR (Supplement, pages 34-36).
+any risk quarter of MDCD and MDCR (Supplementary Figures S1-S2).
 
 ```{r negativeControls, cache=TRUE, echo=FALSE, fig.cap="\\textbf{Systematic error}. Effect size estimates for the negative controls (true hazard ratio = 1). Estimates below the diagonal dashed lines are statistically significant (alpha = 0.05) different from the true effect size. A well-calibrated estimator should have the true effect size within the 95 percent confidence interval 95 percent of times.", fig.show="hold", out.width = '100%'}
 grid::grid.raster(tiff::readTIFF(here("figures/NegativeControlsPlot_ccae.tiff")))
@@ -916,7 +917,9 @@ restricted user agreement. Database descriptions are available in the
 Supplementary Material.
 
 # CODE AVAILABILITY
-Our analysis code is publicly available under the MIT license at
+The source code for the R-package that implements our framework can be found at
+https://github.com/OHDSI/RiskStratifiedEstimation. The code for implementing the
+proof of concept study presented here is publicly available at
 https://github.com/mi-erasmusmc/AceBeta9Outcomes.
 
 
@@ -932,6 +935,12 @@ https://github.com/mi-erasmusmc/AceBeta9Outcomes.
 \noindent
 
 \newpage
+
+# ACKNOWLEDGEMENTS
+AR and PRR have received funding from the Innovative Medicines Initiative 2
+Joint Undertaking (JU) under grant agreement No 80696. The JU receives support
+from the European Union’s Horizon 2020 research and innovation programme and
+EFPIA.
 
 # AUTHOR CONTRIBUTIONS
 AR, PRR, and DVK conceptualised the study. AR, DVK, EWS, and DMK developed the

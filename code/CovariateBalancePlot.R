@@ -3,6 +3,8 @@
 library(tidyverse)
 library(scales)
 
+source("code/helpers/MainCovariateBalancePlot.R")
+
 args <- commandArgs(trailingOnly = TRUE)
 fileType <- as.character(args[1])
 
@@ -20,12 +22,10 @@ for (i in seq_along(databases)) {
     readRDS() %>%
     bind_rows() %>%
     tibble() %>%	
-    CohortMethod::plotCovariateBalanceScatterPlot(
+    plotCovariateBalanceScatterPlot2(
       beforeLabel = "",
-      afterLabel = toupper(databases[i])
-    ) +
-    scale_x_continuous(
-      labels = comma_format(decimal.mark = intToUtf8("0x00B7"))
+      afterLabel = toupper(databases[i]),
+      limits = c(0, .6)
     ) +
     ggplot2::facet_grid(
       ~riskStratum

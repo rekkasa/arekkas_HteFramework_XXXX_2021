@@ -61,15 +61,10 @@ relative <- prepareDataset(mappedOverallRelativeResults) %>%
     database = toupper(database),
     estOutcome = stringr::str_replace_all(estOutcome, "_", " "),
     stratOutcome = stringr::str_replace_all(stratOutcome, "_", " "),
-    estOutcome = stringr::str_replace_all(estOutcome, "hospitalization", "hospitalisation"),
-    estOutcome = stringr::str_replace_all(estOutcome, "emia", "aemia"),
-    stratOutcome = stringr::str_replace_all(stratOutcome, "_", " "),
-    stratOutcome = stringr::str_replace_all(stratOutcome, "hospitalization", "hospitalisation"),
-    stratOutcome = stringr::str_replace_all(stratOutcome, "emia", "aemia"),
     outcomeType = ifelse(
       estOutcome %in% c(
         "acute myocardial infarction",
-        "hospitalisation with heart failure",
+        "hospitalization with heart failure",
         "stroke"
       ),
       "Main outcomes",
@@ -85,8 +80,7 @@ if (outcome == "hospitalization_with_heart_failure") {
     trans = "log10",
     breaks = c(.5, .7, 1, 2, 5),
     limits = c(.45, 7.5),
-    name = "Hazard ratio",
-    labels = comma_format(decimal.mark = intToUtf8("0x00B7"))
+    name = "Hazard ratio"
   )
 } else if (outcome == "stroke") {
   scale_y <- scale_y_continuous(
@@ -101,8 +95,7 @@ if (outcome == "hospitalization_with_heart_failure") {
     trans = "log10",
     breaks = c(.5, .7, 1, 2, 5),
     limits = c(.55, 7.5),
-    name = "Hazard ratio",
-    labels = comma_format(decimal.mark = intToUtf8("0x00B7"))
+    name = "Hazard ratio"
   )
 }
 
@@ -140,13 +133,13 @@ relativePlot <- ggplot(
     ),
     breaks = c(
       "acute myocardial infarction",
-      "hospitalisation with heart failure",
+      "hospitalization with heart failure",
       "stroke",
       "abnormal weight gain",
       "angioedema",
       "cough",
-      "hyperkalaemia",
-      "hypokalaemia",
+      "hyperkalemia",
+      "hypokalemia",
       "hypotension"
     )
   ) +

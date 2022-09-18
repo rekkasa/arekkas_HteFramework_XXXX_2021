@@ -45,8 +45,7 @@ for (i in seq_along(databases)) {
       )
     ) +
     scale_x_continuous(
-      breaks = seq(0, 1, .5),
-      labels = comma_format(decimal.mark = intToUtf8("0x00B7"))
+      breaks = seq(0, 1, .5)
     ) +
     ggplot2::facet_grid(~riskStratum) +
     ggplot2::ylab(

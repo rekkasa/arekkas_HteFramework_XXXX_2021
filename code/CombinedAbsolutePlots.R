@@ -63,15 +63,10 @@ absolute <- prepareDataset(mappedOverallAbsoluteResults) %>%
     upper = 100 * upper,
     estOutcome = stringr::str_replace_all(estOutcome, "_", " "),
     stratOutcome = stringr::str_replace_all(stratOutcome, "_", " "),
-    estOutcome = stringr::str_replace_all(estOutcome, "hospitalization", "hospitalisation"),
-    estOutcome = stringr::str_replace_all(estOutcome, "emia", "aemia"),
-    stratOutcome = stringr::str_replace_all(stratOutcome, "_", " "),
-    stratOutcome = stringr::str_replace_all(stratOutcome, "hospitalization", "hospitalisation"),
-    stratOutcome = stringr::str_replace_all(stratOutcome, "emia", "aemia"),
     outcomeType = ifelse(
       estOutcome %in% c(
         "acute myocardial infarction",
-        "hospitalisation with heart failure",
+        "hospitalization with heart failure",
         "stroke"
       ),
       "Main outcomes",
@@ -96,8 +91,7 @@ absolutePlot <- ggplot(
   scale_y_continuous(
     # trans = "log10",
     # limits = c(.6, 4.04),
-    name = "Absolute risk reduction (%)",
-    labels = comma_format(decimal.mark = intToUtf8("0x00B7"))
+    name = "Absolute risk reduction (%)"
   ) +
   xlab("Risk quarter") +
   facet_grid(outcomeType ~ database, scales = "free") +
@@ -118,13 +112,13 @@ absolutePlot <- ggplot(
     ),
     breaks = c(
       "acute myocardial infarction",
-      "hospitalisation with heart failure",
+      "hospitalization with heart failure",
       "stroke",
       "abnormal weight gain",
       "angioedema",
       "cough",
-      "hyperkalaemia",
-      "hypokalaemia",
+      "hyperkalemia",
+      "hypokalemia",
       "hypotension"
     )
   ) +

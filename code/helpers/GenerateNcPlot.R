@@ -78,10 +78,9 @@ generateNcPlot <- function(
     ggplot2::geom_hline(yintercept = 0) +
     ggplot2::geom_text(x = log(0.52), y = 0.4, alpha = 1, hjust = "left", ggplot2::aes(label = .data$nLabel), size = 12.5, data = dd) +
     ggplot2::geom_text(x = log(0.52), y = 0.37, alpha = 1, hjust = "left", ggplot2::aes(label = .data$meanLabel), size = 12.5, data = dd) +
-      ggplot2::scale_x_continuous(xLabel, limits = log(c(0.5, 2)), breaks = log(breaks), labels = format(signif(breaks, 3), nsmall = 2, decimal.mark = intToUtf8("0x00B7")))+
+      ggplot2::scale_x_continuous(xLabel, limits = log(c(0.5, 2)), breaks = log(breaks), labels = format(signif(breaks, 3), nsmall = 2)) +
     ggplot2::scale_y_continuous(
-      "Standard Error",
-      labels = scales::comma_format(decimal.mark = intToUtf8("0x00B7"))) +
+      "Standard Error") +
     ggplot2::coord_cartesian(ylim = c(0, .4)) +
     ggplot2::facet_grid(. ~ Group) +
     ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),

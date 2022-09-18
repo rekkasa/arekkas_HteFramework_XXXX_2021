@@ -170,11 +170,8 @@ supplement_figures :
 	make figures/CombinedAbsolute_stroke.tiff;
 	make figures/CombinedRelative_hospitalization_with_heart_failure.tiff;
 	make figures/CombinedAbsolute_hospitalization_with_heart_failure.tiff;
-	make figures/NegativeControlsPlot_ccae.tiff;
 	make figures/NegativeControlsPlot_mdcd.tiff;
 	make figures/NegativeControlsPlot_mdcr.tiff;
-	make figures/PsDensity.tiff;
-	make figures/CovariateBalance.tiff;
 
 svg_figures : 
 	make figures/CombinedRelative_acute_myocardial_infarction.svg;
@@ -192,3 +189,6 @@ svg_figures :
 manuscript_figures :
 	make figures/CombinedRelative_acute_myocardial_infarction.tiff;
 	make figures/CombinedAbsolute_acute_myocardial_infarction.tiff;
+	make figures/NegativeControlsPlot_ccae.tiff;
+	make figures/PsDensity.tiff;
+	make figures/CovariateBalance.tiff;
